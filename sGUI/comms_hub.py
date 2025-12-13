@@ -40,7 +40,7 @@ def start_UI_ws_server(callback):
     global UI_callback
     import asyncio
     from websockets import serve
-    timers.timedLog("Starting websockets server")
+    timers.timedLog("[comms_hub] Starting websockets server")
     UI_callback = callback
     async def ws_server():
         global message_queue, loop
