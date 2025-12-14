@@ -24,7 +24,6 @@ def start_UI(UI_filename, UI_callback):
 # HTTP server for UI page
 #===================================================================================
 def start_UI_page_server():
-   # os.chdir(folder)
     server = ThreadingHTTPServer(("localhost", 8080), SimpleHTTPRequestHandler)
     server.serve_forever()
     

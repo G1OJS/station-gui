@@ -1,38 +1,49 @@
 
-from sGUI.wsjtx import start_wsjtx_tailer
 from sGUI.comms_hub import config, start_UI, send_to_ui_ws
 import threading
 from sGUI.IcomCIV import IcomCIV
 from sGUI.antennas import AntennaControl
-antenna_control = AntennaControl()
-rig = IcomCIV()
+from sGUI.FT8_tcvr import ReceiveFT8, FT8_QSO
+
+def onDecode(decode_dict):
+    import sGUI.timers as timers
+    from sGUI.comms_hub import config, send_to_ui_ws
+    if(decode_dict['call_a'] == config.myCall or decode_dict['call_b'] == config.myCall or 'rxfreq' in decode_dict or decode_dict['freq']==config.rxfreq or decode_dict['call_b']==QSO.their_call):
+        decode_dict.update({'priority':True})
+    send_to_ui_ws("decode_dict", decode_dict)
+    if (decode_dict['call_a'] == config.myCall and decode_dict['call_b'] == QSO.their_call):
+        QSO.progress(decode_dict)
+
+def onOccupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
+    from sGUI.comms_hub import config, send_to_ui_ws
+    import sGUI.timers as timers
+    import numpy as np
+
+    occupancy_fine = spectrum_occupancy/np.max(spectrum_occupancy)
+    n_out = int((f1-f0)/bin_hz)
+    occupancy = np.zeros(n_out)
+    for i in range(n_out):
+        occupancy[i] = occupancy_fine[int((f0+bin_hz*i)/spectrum_df)]
+    fs0, fs1 = 1000,2000
+    if(config.myBand == '60m'):
+        fs0, fs1 = 400,990
+    bin0 = int((fs0-f0)/bin_hz)
+    bin1 = int((fs1-f0)/bin_hz)
+    clear_freq = fs0 + bin_hz*np.argmin(occupancy[bin0:bin1])
+    occupancy = 10*np.log10(occupancy + 1e-12)
+    occupancy = 1 + np.clip(occupancy, -40, 0) / 40
+    
+    config.update_clearest_txfreq(clear_freq)
+    timers.timedLog(f"[onOccupancy] occupancy data received, set Tx to {config.txfreq}")
+    send_to_ui_ws("freq_occ_array", {'histogram':occupancy.tolist()})
 
 def process_UI_event(event):
     import sGUI.timers as timers
     from sGUI.comms_hub import send_to_ui_ws
     global QSO
     topic = event['topic']
-    if(topic == "ui.clicked-message"):
-        from sGUI.comms_hub import send_to_ui_ws
-        selected_message = event
-        timers.timedLog(f"[process_UI_event] Clicked on message {selected_message}")
-        config.txfreq = config.clearest_txfreq
-        config.rxfreq = int(selected_message['freq'])
-        timers.timedLog(f"[process_UI_event] Set Rx freq to {config.rxfreq}", logfile = 'QSO.progress.log')
-        QSO.tx_cycle = QSO.tx_cycle_from_clicked_message(selected_message)
-        selected_message.update({'priority':True})
-        send_to_ui_ws("decode_dict", selected_message)
-        if(selected_message['call_a'] == "CQ" or selected_message['call_a'] == config.myCall):
-            QSO.progress(selected_message)
-    if(topic == "ui.repeat-last"):
-        QSO.rpt_cnt = 0
-        QSO.progress({"repeat_tx":True})
-    if(topic == "ui.call-cq"):
-        QSO.clear()
-        t = timers.tnow()
-        i = int(((t-2) % 30)/15) 
-        QSO.tx_cycle = ['odd','even'][i]
-        QSO.transmit(f"CQ {config.myCall} {config.mySquare}")
+    if(topic in ["ui.clicked-message", "ui.repeat-last", "ui.call-cq"]):
+        QSO.process_UI_event(topic)
     if("set-band" in topic):
         set_band_freq(topic)
     if(topic=="ui.check-swr"):
@@ -83,7 +94,11 @@ def run():
     send_to_ui_ws("set_mySquare", {'mySquare':config.mySquare})
     send_to_ui_ws("connect_pskr_mqtt", {'dummy':'dummy'})
     set_band_freq(f"set-band-{config.myBand}")
-    start_wsjtx_tailer(onDecode)
-    
+
+antenna_control = AntennaControl()
+rig = IcomCIV()
+rxFT8 = ReceiveFT8(onDecode)
+QSO = FT8_QSO(rig)
+
 run()
     
