@@ -1,9 +1,9 @@
 
 import serial
-from sGUI.comms_hub import config
+from sGUI.FT8_tcvr import config
 import sGUI.timers as timers
 import threading
-from sGUI.comms_hub import config, start_UI, send_to_ui_ws
+from sGUI.comms_hub import start_UI, send_to_ui_ws
 
 class AntennaControl:
     
@@ -38,5 +38,6 @@ class AntennaControl:
                 timers.timedLog(f"[Antennas] Send 'TUNED' message to UI")
                 send_to_ui_ws("antenna_control", {'MagloopTuning':'TUNED: CHECK SWR'})
                 s = self.rig.getSWR()
-                if(s < 90):
-                    send_to_ui_ws("antenna_control", {'MagloopTuning':'TUNED: SWR OK'})
+                if(s):
+                    if(s < 90):
+                        send_to_ui_ws("antenna_control", {'MagloopTuning':'TUNED: SWR OK'})

@@ -112,3 +112,13 @@ header
 <call:6>HB9EFK <gridsquare:4>JN46 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>+06 <rst_rcvd:3>+03 <qso_date:8>20251207 <time_on:6>100927 <qso_date_off:8>20251207 <time_off:6>100928 <band:5>False <freq:5>False <comment:5>PyFT8 <eor>
 
 <call:5>YO2MD <gridsquare:4>KN06 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-15 <rst_rcvd:3>-15 <qso_date:8>20251211 <time_on:6>230759 <qso_date_off:8>20251211 <time_off:6>230759 <band:3>40m <freq:5>7.074 <comment:5>PyFT8 <eor>
+
+<call:5>EB3JT <gridsquare:4>JN01 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>+04 <rst_rcvd:3>-01 <qso_date:8>20251216 <time_on:6>211512 <qso_date_off:8>20251216 <time_off:6>211512 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>
+
+<call:5>EA1CQ <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-10 <rst_rcvd:3>-09 <qso_date:8>20251216 <time_on:6>211612 <qso_date_off:8>20251216 <time_off:6>211612 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>
+
+<call:6>SP3SWJ <gridsquare:4>JO82 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-05 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>211712 <qso_date_off:8>20251216 <time_off:6>211712 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>
+
+<call:6>SP3SWJ <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-06 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>211747 <qso_date_off:8>20251216 <time_off:6>211747 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>
+
+<call:6>SP3SWJ <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-02 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>211915 <qso_date_off:8>20251216 <time_off:6>211915 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>

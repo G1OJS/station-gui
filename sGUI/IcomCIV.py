@@ -1,6 +1,6 @@
 
 import sGUI.timers as timers
-from sGUI.comms_hub import config
+from sGUI.FT8_tcvr import config
 
 class IcomCIV:
     import serial

@@ -47,6 +47,18 @@ function update_clock() {
 export function add_decode_row(decode_dict, grid_id) {
 	let dd = decode_dict;
 	let grid = document.getElementById(grid_id)
+
+	let matched = false;
+	for (const rw of grid.querySelectorAll('.grid_row:not(.header)')) {
+		let t = rw.innerHTML;
+		if(t.includes(dd.call_a) && t.includes(dd.call_b) && t.includes(dd.grid_rpt)) {
+			console.log("matched");
+			if(dd.decoder == 'PyFT8') {rw.remove()}
+			if(dd.decoder == 'WSJTX') {return}
+			break;
+		};
+	}
+
 	let row = grid.appendChild(document.createElement("div"));
 	row.className='grid_row';
 	let cs = dd.cyclestart_str;
@@ -54,7 +66,7 @@ export function add_decode_row(decode_dict, grid_id) {
 	if(dd.call_a == "CQ" && dd.call_b != myCall) {row.classList.add("cq");}
 	if(dd.call_a == myCall) {row.classList.add('sentTomyCall')}
 	if(dd.call_b == myCall) {row.classList.add('sentBymyCall')}
-	
+		
 	const snr_fmt = (parseInt(dd.snr)<0? "":"+") + dd.snr
 	let fields = [dd.cyclestart_str.split('_')[1], snr_fmt, dd.freq, dd.call_a, dd.call_b, dd.grid_rpt, dd.decoder, dd.hearing_me];
 	fields.forEach((field, idx) => {

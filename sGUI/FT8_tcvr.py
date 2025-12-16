@@ -2,8 +2,7 @@ import numpy as np
 import os
 import threading
 import sGUI.timers as timers
-from sGUI.comms_hub import config, send_to_ui_ws
-
+from sGUI.comms_hub import send_to_ui_ws
 
 import sys
 sys.path.append(r"C:\Users\drala\Documents\Projects\GitHub\PyFT8")
@@ -16,7 +15,7 @@ import PyFT8.logging as logging
 import configparser
 class Config:
     def __init__(self):
-        self.clearest_txfreq = 1000
+        self.txfreq = 1000
         self.txfreq = 1000
         self.rxfreq = 1000
         self.bands = []
@@ -54,12 +53,11 @@ class Config:
         else:
             print("[comms hub] No PyFT8.ini in current directory.")
 
-    def update_clearest_txfreq(self, clear_freq):
-        self.clearest_txfreq = clear_freq
-        send_to_ui_ws("set_txfreq", {'freq':str(self.clearest_txfreq)})
+    def update_txfreq(self, clear_freq):
+        self.txfreq = clear_freq
+        send_to_ui_ws("set_txfreq", {'freq':str(self.txfreq)})
     
 config = Config()
-
 
 class FT8_QSO:
     def __init__(self, rig):
@@ -204,7 +202,7 @@ class FT8_QSO:
             from sGUI.comms_hub import send_to_ui_ws
             selected_message = event
             timers.timedLog(f"[process_UI_event] Clicked on message {selected_message}")
-            config.txfreq = config.clearest_txfreq
+            config.txfreq = config.txfreq
             config.rxfreq = int(selected_message['freq'])
             timers.timedLog(f"[process_UI_event] Set Rx freq to {config.rxfreq}", logfile = 'QSO.progress.log')
             self.tx_cycle = self.tx_cycle_from_clicked_message(selected_message)
@@ -237,8 +235,8 @@ def onOccupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
     occupancy = 10*np.log10(occupancy + 1e-12)
     occupancy = 1 + np.clip(occupancy, -40, 0) / 40
     
-    config.update_clearest_txfreq(clear_freq)
-    timers.timedLog(f"[onOccupancy] occupancy data received, set Tx to {config.txfreq}")
+    config.update_txfreq(clear_freq)
+    timers.timedLog(f"[onOccupancy] occupancy data received, band is {config.myBand}, set Tx to {config.txfreq}")
     send_to_ui_ws("freq_occ_array", {'histogram':occupancy.tolist()})
 
 
