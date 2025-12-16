@@ -18,8 +18,6 @@ function setCurrentBand(band){
 	currentBand = band;
 	for (const el of document.querySelectorAll('.grid_row:not(.header)')) {el.remove()}
 	document.getElementById('currentBand').innerText = currentBand;
-	n_PyFT8_decodes = 0;
-	n_wsjtx_decodes = 0;
 }
 
 function update_clock() {
@@ -106,7 +104,9 @@ websocket.onmessage = (event) => {
 	if(dd.topic == 'antenna_control'){
 		if(dd.hasOwnProperty('MagloopTuning')) {document.getElementById('magloop').innerHTML = dd.MagloopTuning};
 	}
-	
+	if(dd.topic == 'rig_status') {
+		if(dd.hasOwnProperty('PowerLevel')) {document.getElementById('power').innerHTML = dd.PowerLevel}
+	}
 }
 	
 function add_action_button(caption, action, classname){

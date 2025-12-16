@@ -47,12 +47,7 @@ def process_UI_event(event):
     if("set-band" in topic):
         set_band_freq(topic)
     if(topic=="ui.check-swr"):
-        rig.setMode("RTTY")
-        rig.setPTTON()
-        timers.sleep(0.5)
-        rig.setPTTOFF()
-        timers.sleep(0.5)
-        rig.setMode(md="USB", dat = True, filIdx = 1)
+        print(rig.getSWR())
     if(topic=="ui.magloop-nudge-up"):
         antenna_control.send_command("<NU>");
     if(topic=="ui.magloop-nudge-down"):
@@ -76,6 +71,10 @@ def set_band_freq(action):
     with open("sGUI_MHz.txt","w") as f:
         f.write(str(config.myFreq))
     send_to_ui_ws("set_band", {"band":config.myBand})
+    print(config.myFreq)
+    band_power = 100 if config.myFreq < 100 else 50 if config.myFreq < 200 else 35
+    p = band_power * rig.getPWR() / 255.0
+    send_to_ui_ws("rig_status", {"PowerLevel":f"{p:3.0f}W"})
 
 def add_action_buttons():
     from sGUI.comms_hub import config, send_to_ui_ws
@@ -95,8 +94,8 @@ def run():
     send_to_ui_ws("connect_pskr_mqtt", {'dummy':'dummy'})
     set_band_freq(f"set-band-{config.myBand}")
 
-antenna_control = AntennaControl()
 rig = IcomCIV()
+antenna_control = AntennaControl(rig)
 rxFT8 = ReceiveFT8(onDecode)
 QSO = FT8_QSO(rig)
 

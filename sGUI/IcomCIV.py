@@ -12,20 +12,29 @@ class IcomCIV:
             if (self.serial_port):
                 timers.timedLog(f"Connected to {config.COM_port}")
         except IOError:
-            timers.timedLog(f"Couldn't connect to {config.COM_port} - running without CI-V")    
+            timers.timedLog(f"Couldn't connect to {config.COM_port} - running without CI-V")
+
+    def decode_twoBytes(self, twoBytes):
+        n1 = int(twoBytes[0])
+        n2 = int(twoBytes[1])
+        return  n1*100 + (n2//16)*10 + n2 %16
         
     def sendCAT(self, cmd):
-        msg = b"".join([b'\xfe\xfe\x88\xe0', cmd, b'\xfd'])
-        timers.timedLog(f"[CAT] {msg}")
         if(not self.serial_port): return
+        self.serial_port.reset_input_buffer()
+        msg = b'\xfe\xfe\x88\xe0' + cmd + b'\xfd'
+        timers.timedLog(f"[CAT] send {msg.hex(' ')}")
         self.serial_port.write(msg)
+        resp = self.serial_port.read_until(b'\xfd')
+        resp = self.serial_port.read_until(b'\xfd')
+        timers.timedLog(f"[CAT] response {resp.hex(' ')}")
+        return resp
 
     def setFreqHz(self, freqHz):
         s = f"{freqHz:09d}"
         timers.timedLog(f"[CAT] SET frequency")
         timers.timedLog(f"[CAT] {s}")
         fBytes = b"".join(bytes([b]) for b in [16*int(s[7])+int(s[8]),16*int(s[5])+int(s[6]),16*int(s[3])+int(s[4]),16*int(s[1])+int(s[2]), int(s[0])])
-        if(not self.serial_port): return
         self.sendCAT(b"".join([b'\x00', fBytes]))
 
     def setMode(self, md='USB', dat=False, filIdx = 1 ):
@@ -36,14 +45,29 @@ class IcomCIV:
 
     def setPTTON(self):
         timers.timedLog(f"[CAT] PTT On")
-        if(not self.serial_port): return
         self.sendCAT(config.PTT_on)
 
     def setPTTOFF(self):
         timers.timedLog(f"[CAT] PTT Off")
-        if(not self.serial_port): return
         self.sendCAT(config.PTT_off)
 
+    def getSWR(self):
+        resp = False
+        self.setMode("RTTY")
+        self.setPTTON()
+        timers.sleep(0.05)
+        timers.timedLog(f"CAT command: get SWR")
+        resp = self.sendCAT(b'\x15\x12')
+        self.setPTTOFF()
+        self.setMode(md="USB", dat = True, filIdx = 1)
+        return int(self.decode_twoBytes(resp[-3:-1]))
+
+    def getPWR(self):
+        resp = False
+        timers.timedLog(f"CAT command: get PWR")
+        resp = self.sendCAT(b'\x14\x0A')
+        return int(self.decode_twoBytes(resp[-3:-1]))        
+      
 
 #====================================================
 # Not used in sGUI
