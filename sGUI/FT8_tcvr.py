@@ -248,8 +248,7 @@ class ReceiveFT8:
         cycle_manager = Cycle_manager(FT8, 
                           onDecode, onOccupancy = onOccupancy,
                           input_device_keywords = config.input_device_keywords,
-                          max_iters = 30, max_stall = 8, max_ncheck = 30, timeout = 0.2, 
-                          sync_score_thresh = 2, thread_PyFT8_decode_manager = True) 
+                          max_iters = 30, max_ncheck = 30, sync_score_thresh = 2) 
 
     def wsjtx_all_tailer(self, all_txt_path, on_decode):
         def follow():
@@ -269,5 +268,6 @@ class ReceiveFT8:
             except:
                 pass
             if(decode_dict):
+                decode_dict.update({'dedupe_key':ls[0]+" "+ ls[7]+" "+ ls[8] + " "+ls[9]})
                 on_decode(decode_dict)
  
