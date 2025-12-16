@@ -15,9 +15,10 @@ class IcomCIV:
             timers.timedLog(f"Couldn't connect to {config.COM_port} - running without CI-V")
 
     def decode_twoBytes(self, twoBytes):
-        n1 = int(twoBytes[0])
-        n2 = int(twoBytes[1])
-        return  n1*100 + (n2//16)*10 + n2 %16
+        if(len(twoBytes)==2):
+            n1 = int(twoBytes[0])
+            n2 = int(twoBytes[1])
+            return  n1*100 + (n2//16)*10 + n2 %16
         
     def sendCAT(self, cmd):
         if(not self.serial_port): return
@@ -60,13 +61,18 @@ class IcomCIV:
         resp = self.sendCAT(b'\x15\x12')
         self.setPTTOFF()
         self.setMode(md="USB", dat = True, filIdx = 1)
-        return int(self.decode_twoBytes(resp[-3:-1]))
+        resp_decoded = self.decode_twoBytes(resp[-3:-1])
+        if(resp_decoded):
+            return int(resp_decoded)
 
     def getPWR(self):
         resp = False
         timers.timedLog(f"CAT command: get PWR")
         resp = self.sendCAT(b'\x14\x0A')
-        return int(self.decode_twoBytes(resp[-3:-1]))        
+        resp_decoded = self.decode_twoBytes(resp[-3:-1])
+        if(resp_decoded):
+            return int(resp_decoded)
+       
       
 
 #====================================================

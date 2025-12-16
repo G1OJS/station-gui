@@ -197,7 +197,9 @@ class FT8_QSO:
         timers.timedLog("[QSO.log] send to ADIF {log_dict}", logfile = 'QSO.progress.log')
         logging.append_qso("sGUI.adi", log_dict)
 
-    def process_UI_event(self, topic):
+    def process_UI_event(self, event):
+        topic = event['topic']
+        print(f"[FT8_tcvr] process_ui_event {topic}")
         if(topic == "ui.clicked-message"):
             from sGUI.comms_hub import send_to_ui_ws
             selected_message = event

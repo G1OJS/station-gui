@@ -1,9 +1,17 @@
 
 from sGUI.comms_hub import config, start_UI, send_to_ui_ws
 import threading
+import time
 from sGUI.IcomCIV import IcomCIV
 from sGUI.antennas import AntennaControl
 from sGUI.FT8_tcvr import ReceiveFT8, FT8_QSO
+
+def check_rig():
+    while True:
+        time.sleep(2)
+        band_power = 100 if config.myFreq < 100 else 50 if config.myFreq < 200 else 35
+        p = band_power * rig.getPWR() / 255.0
+        send_to_ui_ws("rig_status", {"PowerLevel":f"{p:3.0f}W"})
 
 def onDecode(decode_dict):
     import sGUI.timers as timers
@@ -42,8 +50,9 @@ def process_UI_event(event):
     from sGUI.comms_hub import send_to_ui_ws
     global QSO
     topic = event['topic']
+    print(f"[sGUI] process_ui_event {topic}")
     if(topic in ["ui.clicked-message", "ui.repeat-last", "ui.call-cq"]):
-        QSO.process_UI_event(topic)
+        QSO.process_UI_event(event)
     if("set-band" in topic):
         set_band_freq(topic)
     if(topic=="ui.check-swr"):
@@ -71,10 +80,6 @@ def set_band_freq(action):
     with open("sGUI_MHz.txt","w") as f:
         f.write(str(config.myFreq))
     send_to_ui_ws("set_band", {"band":config.myBand})
-    print(config.myFreq)
-    band_power = 100 if config.myFreq < 100 else 50 if config.myFreq < 200 else 35
-    p = band_power * rig.getPWR() / 255.0
-    send_to_ui_ws("rig_status", {"PowerLevel":f"{p:3.0f}W"})
 
 def add_action_buttons():
     from sGUI.comms_hub import config, send_to_ui_ws
@@ -93,6 +98,7 @@ def run():
     send_to_ui_ws("set_mySquare", {'mySquare':config.mySquare})
     send_to_ui_ws("connect_pskr_mqtt", {'dummy':'dummy'})
     set_band_freq(f"set-band-{config.myBand}")
+    threading.Thread(target = check_rig, daemon = True).start()
 
 rig = IcomCIV()
 antenna_control = AntennaControl(rig)
