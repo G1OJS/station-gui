@@ -122,3 +122,7 @@ header
 <call:6>SP3SWJ <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-06 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>211747 <qso_date_off:8>20251216 <time_off:6>211747 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>
 
 <call:6>SP3SWJ <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-02 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>211915 <qso_date_off:8>20251216 <time_off:6>211915 <band:3>60m <freq:5>5.357 <comment:4>sGUI <eor>
+
+<call:5>F8BON <gridsquare:4>IN86 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-01 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>215742 <qso_date_off:8>20251216 <time_off:6>215742 <band:4>160m <freq:4>1.84 <comment:4>sGUI <eor>
+
+<call:5>F8BON <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>+00 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>215815 <qso_date_off:8>20251216 <time_off:6>215815 <band:4>160m <freq:4>1.84 <comment:4>sGUI <eor>

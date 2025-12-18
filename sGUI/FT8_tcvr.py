@@ -248,7 +248,7 @@ class ReceiveFT8:
         cycle_manager = Cycle_manager(FT8, 
                           onDecode, onOccupancy = onOccupancy,
                           input_device_keywords = config.input_device_keywords,
-                          max_iters = 30, max_ncheck = 30, sync_score_thresh = 2) 
+                          max_iters = 25, max_ncheck = 38, sync_score_thresh = 4) 
 
     def wsjtx_all_tailer(self, all_txt_path, on_decode):
         def follow():

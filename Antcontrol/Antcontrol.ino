@@ -105,11 +105,11 @@ void nudge(bool directionUp){
   getAndPrintCurrStep();
   const int delta = 1;
   TargetStep = directionUp? CurrStep + delta : CurrStep - delta;
-  analogWrite(directionUp? MotorA:MotorB,200) ;
+  analogWrite(directionUp? MotorA:MotorB,240) ;
   while (directionUp? analogRead(A0) < TargetStep : analogRead(A0) > TargetStep) {
-    delay(directionUp? 60:30);
+    delay(directionUp? 70:50);
     motor_stop();
-    delay(50);
+    delay(30);
   }
   motor_stop();
   getAndPrintCurrStep();
