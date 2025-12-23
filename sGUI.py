@@ -6,7 +6,17 @@ from sGUI.IcomCIV import IcomCIV
 from sGUI.antennas import AntennaControl
 from sGUI.FT8_tcvr import ReceiveFT8, FT8_QSO, config
 
-def check_rig():
+
+def onMagloopStatus(status):
+    send_to_ui_ws("antenna_control", {'MagloopStatus':f"{status}"})
+    
+def onMagloopStep(step):
+    send_to_ui_ws("antenna_control", {'MagloopStep':f"{step}"})
+
+def query_loop():
+    antenna_control.send_command('<Q>')
+
+def poll_rig():
     while True:
         timers.sleep(2)
         band_power = 100 if config.myFreq < 100 else 50 if config.myFreq < 200 else 35
@@ -14,6 +24,12 @@ def check_rig():
         if(p):
             p = band_power * p / 255.0
             send_to_ui_ws("rig_status", {"PowerLevel":f"{p:3.0f}W"})
+        query_loop()
+
+def check_swr():
+    s = rig.getSWR()
+    if(s):
+        send_to_ui_ws("rig_status", {"swr":f"{s:3.0f}"})
 
 def onDecode(decode_dict):
     if(decode_dict['call_a'] == config.myCall or decode_dict['call_b'] == config.myCall or 'rxfreq' in decode_dict or decode_dict['freq']==config.rxfreq or decode_dict['call_b']==QSO.their_call):
@@ -31,8 +47,7 @@ def process_UI_event(event):
     if("set-band" in topic):
         set_band_freq(topic)
     if(topic=="ui.check-swr"):
-        s = rig.getSWR()
-        # to be written
+        check_swr()
     if(topic=="ui.magloop-nudge-up"):
         antenna_control.send_command("<NU>");
     if(topic=="ui.magloop-nudge-down"):
@@ -73,10 +88,10 @@ def run():
     send_to_ui_ws("set_mySquare", {'mySquare':config.mySquare})
     send_to_ui_ws("connect_pskr_mqtt", {'dummy':'dummy'})
     set_band_freq(f"set-band-{config.myBand}")
-    threading.Thread(target = check_rig, daemon = True).start()
+    threading.Thread(target = poll_rig, daemon = True).start()
 
 rig = IcomCIV()
-antenna_control = AntennaControl(rig)
+antenna_control = AntennaControl(onMagloopStatus, onMagloopStep)
 rxFT8 = ReceiveFT8(onDecode)
 QSO = FT8_QSO(rig)
 

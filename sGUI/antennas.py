@@ -7,11 +7,13 @@ from sGUI.comms_hub import start_UI, send_to_ui_ws
 
 class AntennaControl:
     
-    def __init__(self, rig):
+    def __init__(self, onMagloopStatus, onMagloopStep):
         timers.timedLog(f"[Antennas] Connecting to {config.AC_port}")
         self.arduino = False
         self.running = True
-        self.rig = rig
+        self.onMagloopStatus = onMagloopStatus
+        self.onMagloopStep = onMagloopStep
+        
         try:
             self.arduino = serial.Serial(config.AC_port, baudrate=config.AC_baudrate, timeout=0.1)
         except:
@@ -34,10 +36,10 @@ class AntennaControl:
             while self.arduino.in_waiting == 0:
                 timers.sleep(0.25)
             d = self.arduino.readline()
+            if(b"TUNING" in d):
+                self.onMagloopStatus('TUNING')
             if(b"TUNED" in d):
-                timers.timedLog(f"[Antennas] Send 'TUNED' message to UI")
-                send_to_ui_ws("antenna_control", {'MagloopTuning':'TUNED: CHECK SWR'})
-                s = self.rig.getSWR()
-                if(s):
-                    if(s < 90):
-                        send_to_ui_ws("antenna_control", {'MagloopTuning':'TUNED: SWR OK'})
+                self.onMagloopStatus('TUNED')
+            if(b"CurrStep" in d):
+                self.onMagloopStep(str(d.strip())[10:])
+

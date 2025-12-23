@@ -114,10 +114,12 @@ websocket.onmessage = (event) => {
 	}
 	
 	if(dd.topic == 'antenna_control'){
-		if(dd.hasOwnProperty('MagloopTuning')) {document.getElementById('magloop').innerHTML = dd.MagloopTuning};
+		if(dd.hasOwnProperty('MagloopStatus')) {document.getElementById('magloop_status').innerHTML = dd.MagloopStatus};
+		if(dd.hasOwnProperty('MagloopStep')) {document.getElementById('magloop_step').innerHTML = dd.MagloopStep};
 	}
 	if(dd.topic == 'rig_status') {
 		if(dd.hasOwnProperty('PowerLevel')) {document.getElementById('power').innerHTML = dd.PowerLevel}
+		if(dd.hasOwnProperty('swr')) {document.getElementById('swr').innerHTML = dd.swr}
 	}
 }
 	
@@ -129,27 +131,6 @@ function add_action_button(caption, action, classname){
 	btn.innerText = caption;
 	btn.dataset.action = action;
 	btn.addEventListener("click", (event) => { websocket.send(JSON.stringify({topic: "ui." + event.target.dataset.action})) });
-}
-
-function updateLoadingMetrics(metrics_dict) {
-	let pipeline_el = document.getElementById("pipeline");
-	if (pipeline_el.children.length == 0) {
-		console.log("create pipeline bars")
-		let html = "";
-		
-		for (const [k, v] of Object.entries(metrics_dict)){
-			if(k!='topic'){
-				html = html + "<div class='bar-container'><div class='bar-bg'><div id='"
-				html = html + k + "' class='bar'></div></div><span class='label'>" + k + "</span></div>"
-			}
-		}
-		pipeline_el.innerHTML = html;
-	}
-	for (const [k, v] of Object.entries(metrics_dict)){
-		if(k!='topic'){
-			document.getElementById(k).style.transform =`scaleY(${1-v})`;
-		}
-	}
 }
 
 function update_hearing_me_list(){

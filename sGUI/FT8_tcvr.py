@@ -242,13 +242,22 @@ def onOccupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
 
 class ReceiveFT8:
     def __init__(self, onDecode):
+        self.onDecode = onDecode
         threading.Thread(target = self.wsjtx_all_tailer,
                          kwargs = ({'all_txt_path':config.wsjtx_all_file,
                                     'on_decode':onDecode})).start()
         cycle_manager = Cycle_manager(FT8, 
-                          onDecode, onOccupancy = onOccupancy,
+                          self.onDecodePyFT8, onOccupancy = onOccupancy,
                           input_device_keywords = config.input_device_keywords,
-                          max_iters = 25, max_ncheck = 38, sync_score_thresh = 4) 
+                          max_iters = 25, max_ncheck = 38, sync_score_thresh = 4)
+
+    def onDecodePyFT8(self, c):
+        import time
+        decode_dict = {'decoder':'PyFT8', 'cyclestart_str':c.cyclestart_str,
+                   'call_a':c.call_a, 'call_b':c.call_b, 'grid_rpt':c.grid_rpt, 'freq':c.fHz,
+                   't_decode':time.time(), 'snr':c.snr, 'dt':c.dt, 'sync_score':c.pipeline.sync.result.score,
+                   'ncheck_initial':c.pipeline.ldpc.metrics.ncheck_initial, 'n_its': c.pipeline.ldpc.metrics.n_its}
+        self.onDecode(decode_dict)    
 
     def wsjtx_all_tailer(self, all_txt_path, on_decode):
         def follow():
