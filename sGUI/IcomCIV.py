@@ -5,8 +5,9 @@ from sGUI.FT8_tcvr import config
 class IcomCIV:
     import serial
 
-    def __init__(self):
+    def __init__(self, verbose = False):
         self.serial_port = False
+        self.verbose = verbose
         try:
             self.serial_port = self.serial.Serial(port = config.COM_port, baudrate = config.baudrate, timeout = 0.1)
             if (self.serial_port):
@@ -24,11 +25,13 @@ class IcomCIV:
         if(not self.serial_port): return
         self.serial_port.reset_input_buffer()
         msg = b'\xfe\xfe\x88\xe0' + cmd + b'\xfd'
-        timers.timedLog(f"[CAT] send {msg.hex(' ')}")
+        if(self.verbose):
+            timers.timedLog(f"[CAT] send {msg.hex(' ')}")
         self.serial_port.write(msg)
         resp = self.serial_port.read_until(b'\xfd')
         resp = self.serial_port.read_until(b'\xfd')
-        timers.timedLog(f"[CAT] response {resp.hex(' ')}")
+        if(self.verbose):
+            timers.timedLog(f"[CAT] response {resp.hex(' ')}")
         return resp
 
     def setFreqHz(self, freqHz):
@@ -39,17 +42,20 @@ class IcomCIV:
         self.sendCAT(b"".join([b'\x00', fBytes]))
 
     def setMode(self, md='USB', dat=False, filIdx = 1 ):
-        timers.timedLog(f"[CAT] SET mode: {md} data:{dat} filter:{filIdx}")
+        if(self.verbose):
+            timers.timedLog(f"[CAT] SET mode: {md} data:{dat} filter:{filIdx}")
         mdIdx = ['LSB','USB','AM','CW','RTTY','FM','WFM','CW-R','RTTY-R'].index(md)
         datIdx = 1 if dat else 0
         self.sendCAT(b''.join([b'\x26\x00', bytes([mdIdx]), bytes([datIdx]), bytes([filIdx]) ]) )
 
     def setPTTON(self):
-        timers.timedLog(f"[CAT] PTT On")
+        if(self.verbose):
+            timers.timedLog(f"[CAT] PTT On")
         self.sendCAT(config.PTT_on)
 
     def setPTTOFF(self):
-        timers.timedLog(f"[CAT] PTT Off")
+        if(self.verbose):
+            timers.timedLog(f"[CAT] PTT Off")
         self.sendCAT(config.PTT_off)
 
     def getSWR(self):
@@ -57,7 +63,8 @@ class IcomCIV:
         self.setMode("RTTY")
         self.setPTTON()
         timers.sleep(0.05)
-        timers.timedLog(f"CAT command: get SWR")
+        if(self.verbose):
+            timers.timedLog(f"CAT command: get SWR")
         resp = self.sendCAT(b'\x15\x12')
         self.setPTTOFF()
         self.setMode(md="USB", dat = True, filIdx = 1)
@@ -67,7 +74,8 @@ class IcomCIV:
 
     def getPWR(self):
         resp = False
-        timers.timedLog(f"CAT command: get PWR")
+        if(self.verbose):
+            timers.timedLog(f"CAT command: get PWR")
         resp = self.sendCAT(b'\x14\x0A')
         resp_decoded = self.decode_twoBytes(resp[-3:-1])
         if(resp_decoded):

@@ -87,6 +87,15 @@ export function add_decode_row(decode_dict, grid_id) {
 	}); 
 	
 	grid.scrollTop = grid.scrollHeight;
+	let nP = 0, nW = 0;
+	for (const rw  of grid.querySelectorAll('.grid_row:not(.header)')){
+		let t = rw.innerHTML;
+		nW += t.includes("WSJTX")? 1:0;
+		nP += t.includes("PyFT8")? 1:0;
+	}
+	let nT = nP + nW;
+	document.getElementById('pyft8_pc').innerHTML = (nT==0)? "-":Math.round(100*nP/nT)+"%";
+	
 }
 	
 const websocket = new WebSocket("ws://localhost:5678/");

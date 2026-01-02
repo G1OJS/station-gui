@@ -10,7 +10,7 @@ import PyFT8.FT8_encoder as FT8_encoder
 import PyFT8.audio as audio
 from PyFT8.cycle_manager import Cycle_manager
 from PyFT8.sigspecs import FT8
-import PyFT8.logging as logging
+import sGUI.logging as logging
 
 import configparser
 class Config:
@@ -248,15 +248,13 @@ class ReceiveFT8:
                                     'on_decode':onDecode})).start()
         cycle_manager = Cycle_manager(FT8, 
                           self.onDecodePyFT8, onOccupancy = onOccupancy,
-                          input_device_keywords = config.input_device_keywords,
-                          max_iters = 25, max_ncheck = 38, sync_score_thresh = 4)
+                          input_device_keywords = config.input_device_keywords)
 
     def onDecodePyFT8(self, c):
         import time
         decode_dict = {'decoder':'PyFT8', 'cyclestart_str':c.cyclestart_str,
                    'call_a':c.call_a, 'call_b':c.call_b, 'grid_rpt':c.grid_rpt, 'freq':c.fHz,
-                   't_decode':time.time(), 'snr':c.snr, 'dt':c.dt, 'sync_score':c.pipeline.sync.result.score,
-                   'ncheck_initial':c.pipeline.ldpc.metrics.ncheck_initial, 'n_its': c.pipeline.ldpc.metrics.n_its}
+                   't_decode':time.time(), 'snr':c.snr, 'dt':c.dt, 'sync_score':c.sync_score}
         self.onDecode(decode_dict)    
 
     def wsjtx_all_tailer(self, all_txt_path, on_decode):

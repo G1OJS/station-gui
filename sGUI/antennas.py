@@ -7,12 +7,13 @@ from sGUI.comms_hub import start_UI, send_to_ui_ws
 
 class AntennaControl:
     
-    def __init__(self, onMagloopStatus, onMagloopStep):
+    def __init__(self, onMagloopStatus, onMagloopStep, verbose = False):
         timers.timedLog(f"[Antennas] Connecting to {config.AC_port}")
         self.arduino = False
         self.running = True
         self.onMagloopStatus = onMagloopStatus
         self.onMagloopStep = onMagloopStep
+        self.verbose = verbose
         
         try:
             self.arduino = serial.Serial(config.AC_port, baudrate=config.AC_baudrate, timeout=0.1)
@@ -26,9 +27,11 @@ class AntennaControl:
     def send_command(self, c):
         if c:
             if("<T" in c):
-                timers.timedLog(f"[Antennas] Send 'TUNING' message to UI")
+                if(self.verbose):
+                    timers.timedLog(f"[Antennas] Send 'TUNING' message to UI")
                 send_to_ui_ws("antenna_control", {'MagloopTuning':'TUNING'})
-            timers.timedLog(f"[Antennas] Send command {c}")
+            if(self.verbose):
+                timers.timedLog(f"[Antennas] Send command {c}")
             self.arduino.write(c.encode('UTF-8'))
 
     def monitor_arduino(self):
