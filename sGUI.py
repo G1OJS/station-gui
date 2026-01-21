@@ -31,10 +31,18 @@ def check_swr():
     if(s):
         send_to_ui_ws("rig_status", {"swr":f"{s:3.0f}"})
 
+def harmonise_calls(call):
+    if("<" in call):
+        call = "HASHED"
+    return call
+
 def onDecode(decode_dict):
     if(decode_dict['call_a'] == config.myCall or decode_dict['call_b'] == config.myCall or 'rxfreq' in decode_dict or decode_dict['freq']==config.rxfreq or decode_dict['call_b']==QSO.their_call):
         decode_dict.update({'priority':True})
     decode_dict.update({'freq':str(int(decode_dict['freq']))})
+    decode_dict.update({'call_a':harmonise_calls(decode_dict['call_a'])})
+    decode_dict.update({'call_b':harmonise_calls(decode_dict['call_b'])})
+    
     send_to_ui_ws("decode_dict", decode_dict)
     if (decode_dict['call_a'] == config.myCall and decode_dict['call_b'] == QSO.their_call):
         QSO.progress(decode_dict)

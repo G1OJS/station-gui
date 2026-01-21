@@ -248,13 +248,13 @@ class ReceiveFT8:
                                     'on_decode':onDecode})).start()
         cycle_manager = Cycle_manager(FT8, 
                           self.onDecodePyFT8, onOccupancy = onOccupancy,
-                          input_device_keywords = config.input_device_keywords)
+                          input_device_keywords = config.input_device_keywords, freq_range = [200,3500])
 
     def onDecodePyFT8(self, c):
         import time
         decode_dict = {'decoder':'PyFT8', 'cyclestart_str':c.cyclestart_str,
                    'call_a':c.call_a, 'call_b':c.call_b, 'grid_rpt':c.grid_rpt, 'freq':c.fHz,
-                   't_decode':time.time(), 'snr':c.snr, 'dt':c.dt, 'sync_score':c.sync_score}
+                   't_decode':time.time(), 'snr':c.snr, 'dt':c.dt}
         self.onDecode(decode_dict)    
 
     def wsjtx_all_tailer(self, all_txt_path, on_decode):
