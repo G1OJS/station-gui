@@ -37,14 +37,18 @@ def harmonise_calls(call):
     return call
 
 def onDecode(decode_dict):
-    if(decode_dict['call_a'] == config.myCall or decode_dict['call_b'] == config.myCall or 'rxfreq' in decode_dict or decode_dict['freq']==config.rxfreq or decode_dict['call_b']==QSO.their_call):
+    msg_parts = decode_dict['msg'].split()
+    call_a, call_b, grid_rpt = msg_parts[0], msg_parts[1], msg_parts[2]  
+    if(call_a == config.myCall or call_b == config.myCall or 'rxfreq' in decode_dict or decode_dict['f']==config.rxfreq or call_b==QSO.their_call):
         decode_dict.update({'priority':True})
-    decode_dict.update({'freq':str(int(decode_dict['freq']))})
-    decode_dict.update({'call_a':harmonise_calls(decode_dict['call_a'])})
-    decode_dict.update({'call_b':harmonise_calls(decode_dict['call_b'])})
-    
+    decode_dict.update({'f':str(int(decode_dict['f']))})
+    decode_dict.update({'call_a':harmonise_calls(call_a)})
+    decode_dict.update({'call_b':harmonise_calls(call_b)})
+    decode_dict.update({'grid_rpt':grid_rpt})
+    decode_dict.update({'cyclestart_str':decode_dict['cs']})
+
     send_to_ui_ws("decode_dict", decode_dict)
-    if (decode_dict['call_a'] == config.myCall and decode_dict['call_b'] == QSO.their_call):
+    if (call_a == config.myCall and call_b == QSO.their_call):
         QSO.progress(decode_dict)
 
 def process_UI_event(event):

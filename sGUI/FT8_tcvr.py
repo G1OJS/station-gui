@@ -10,6 +10,7 @@ import PyFT8.FT8_encoder as FT8_encoder
 import PyFT8.audio as audio
 from PyFT8.cycle_manager import Cycle_manager
 from PyFT8.sigspecs import FT8
+from sGUI.wsjtx_all_tailer import Wsjtx_all_tailer
 import sGUI.logging as logging
 
 import configparser
@@ -220,7 +221,7 @@ class FT8_QSO:
             self.tx_cycle = ['odd','even'][i]
             self.transmit(f"CQ {config.myCall} {config.mySquare}")
 
-def onOccupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
+def on_occupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
     occupancy_fine = spectrum_occupancy/np.max(spectrum_occupancy)
     n_out = int((f1-f0)/bin_hz)
     occupancy = np.zeros(n_out)
@@ -236,45 +237,22 @@ def onOccupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
     occupancy = 1 + np.clip(occupancy, -40, 0) / 40
     
     config.update_txfreq(clear_freq)
-    timers.timedLog(f"[onOccupancy] occupancy data received, band is {config.myBand}, set Tx to {config.txfreq}")
+    timers.timedLog(f"[on_occupancy] occupancy data received, band is {config.myBand}, set Tx to {config.txfreq}")
     send_to_ui_ws("freq_occ_array", {'histogram':occupancy.tolist()})
 
 
 class ReceiveFT8:
     def __init__(self, onDecode):
         self.onDecode = onDecode
-        threading.Thread(target = self.wsjtx_all_tailer,
-                         kwargs = ({'all_txt_path':config.wsjtx_all_file,
-                                    'on_decode':onDecode})).start()
-        cycle_manager = Cycle_manager(FT8, 
-                          self.onDecodePyFT8, onOccupancy = onOccupancy,
+        cycle_manager = Cycle_manager(FT8, on_decode = self.onDecodePyFT8, on_occupancy = on_occupancy,
                           input_device_keywords = config.input_device_keywords, freq_range = [200,3500])
+        wsjtx_all_tailer = Wsjtx_all_tailer(on_decode = self.onDecodeWSJTX, running = cycle_manager.running)
 
-    def onDecodePyFT8(self, c):
-        import time
-        decode_dict = {'decoder':'PyFT8', 'cyclestart_str':c.cyclestart_str,
-                   'call_a':c.call_a, 'call_b':c.call_b, 'grid_rpt':c.grid_rpt, 'freq':c.fHz,
-                   't_decode':time.time(), 'snr':c.snr, 'dt':c.dt}
+    def onDecodePyFT8(self, decode_dict):
+        decode_dict.update({'decoder':'PyFT8'})
         self.onDecode(decode_dict)    
 
-    def wsjtx_all_tailer(self, all_txt_path, on_decode):
-        def follow():
-            with open(all_txt_path, "r") as f:
-                f.seek(0, 2)
-                while True:
-                    line = f.readline()
-                    if not line:
-                        timers.sleep(0.2)
-                        continue
-                    yield line.strip()
-        for line in follow():
-            ls = line.split()
-            decode_dict = False
-            try:
-                decode_dict = {'decoder':'WSJTX', 'cyclestart_str':ls[0],'snr':ls[4], 'dt':ls[5], 'freq':ls[6], 'call_a':ls[7], 'call_b':ls[8], 'grid_rpt':ls[9]}
-            except:
-                pass
-            if(decode_dict):
-                decode_dict.update({'dedupe_key':ls[0]+" "+ ls[7]+" "+ ls[8] + " "+ls[9]})
-                on_decode(decode_dict)
- 
+    def onDecodeWSJTX(self, dd):
+        decode_dict = dd.copy()
+        decode_dict.update({'decoder':'WSJTX'})
+        self.onDecode(decode_dict)   
