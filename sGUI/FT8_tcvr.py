@@ -244,15 +244,6 @@ def on_occupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
 class ReceiveFT8:
     def __init__(self, onDecode):
         self.onDecode = onDecode
-        cycle_manager = Cycle_manager(FT8, on_decode = self.onDecodePyFT8, on_occupancy = on_occupancy,
-                          input_device_keywords = config.input_device_keywords, freq_range = [200,3500])
-        wsjtx_all_tailer = Wsjtx_all_tailer(on_decode = self.onDecodeWSJTX, running = cycle_manager.running)
-
-    def onDecodePyFT8(self, decode_dict):
-        decode_dict.update({'decoder':'PyFT8'})
-        self.onDecode(decode_dict)    
-
-    def onDecodeWSJTX(self, dd):
-        decode_dict = dd.copy()
-        decode_dict.update({'decoder':'WSJTX'})
-        self.onDecode(decode_dict)   
+        cycle_manager = Cycle_manager(FT8, on_decode = self.onDecode, on_occupancy = on_occupancy,
+                          input_device_keywords = config.input_device_keywords, freq_range = [100,3500])
+        wsjtx_all_tailer = Wsjtx_all_tailer(on_decode = self.onDecode, running = True)
