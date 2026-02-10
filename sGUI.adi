@@ -128,3 +128,5 @@ header
 <call:5>F8BON <gridsquare:5>False <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>+00 <rst_rcvd:3>+00 <qso_date:8>20251216 <time_on:6>215815 <qso_date_off:8>20251216 <time_off:6>215815 <band:4>160m <freq:4>1.84 <comment:4>sGUI <eor>
 
 <call:6>IU5HIU <gridsquare:4>JN53 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-04 <rst_rcvd:3>+00 <qso_date:8>20260201 <time_on:6>153043 <qso_date_off:8>20260201 <time_off:6>153043 <band:3>20m <freq:6>14.074 <comment:4>sGUI <eor>
+
+<call:6>HG0NPJ <gridsquare:4>JN97 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>+07 <rst_rcvd:3>+07 <qso_date:8>20260210 <time_on:6>173213 <qso_date_off:8>20260210 <time_off:6>173213 <band:3>20m <freq:6>14.074 <comment:4>sGUI <eor>

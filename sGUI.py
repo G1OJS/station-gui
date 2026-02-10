@@ -45,7 +45,7 @@ def on_decode(decode_dict):
     call_a, call_b, grid_rpt = msg_parts[0], msg_parts[1], msg_parts[2]  
     if(call_a == config.myCall or call_b == config.myCall or 'rxfreq' in decode_dict or decode_dict['f']==config.rxfreq or call_b==QSO.their_call):
         decode_dict.update({'priority':True})
-    decode_dict.update({'f':str(int(decode_dict['f']))})
+    decode_dict.update({'freq':str(int(decode_dict['f']))})
     decode_dict.update({'call_a':harmonise_calls(call_a)})
     decode_dict.update({'call_b':harmonise_calls(call_b)})
     decode_dict.update({'grid_rpt':grid_rpt})
