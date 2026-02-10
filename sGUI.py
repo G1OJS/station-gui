@@ -1,11 +1,15 @@
-
+import numpy as np
 from sGUI.comms_hub import start_UI, send_to_ui_ws
 import threading
 import sGUI.timers as timers
 from sGUI.IcomCIV import IcomCIV
 from sGUI.antennas import AntennaControl
-from sGUI.FT8_tcvr import ReceiveFT8, FT8_QSO, config
+from sGUI.FT8_tcvr import FT8_QSO, config
+from PyFT8.cycle_manager import Cycle_manager
+from PyFT8.sigspecs import FT8
+from sGUI.wsjtx_all_tailer import Wsjtx_all_tailer
 
+cycle_manager = None
 
 def onMagloopStatus(status):
     send_to_ui_ws("antenna_control", {'MagloopStatus':f"{status}"})
@@ -36,7 +40,7 @@ def harmonise_calls(call):
         call = "HASHED"
     return call
 
-def onDecode(decode_dict):
+def on_decode(decode_dict):
     msg_parts = decode_dict['msg'].split()
     call_a, call_b, grid_rpt = msg_parts[0], msg_parts[1], msg_parts[2]  
     if(call_a == config.myCall or call_b == config.myCall or 'rxfreq' in decode_dict or decode_dict['f']==config.rxfreq or call_b==QSO.their_call):
@@ -102,9 +106,35 @@ def run():
     set_band_freq(f"set-band-{config.myBand}")
     threading.Thread(target = poll_rig, daemon = True).start()
 
+def on_finished_cycle(finished_dict, f0=0, f1=3500, bin_hz=10):
+    spec_df=finished_dict['spec_df']
+    spec_dB = cycle_manager.spectrum.audio_in.dB_main
+    occ = np.mean(spec_dB, axis = 0)
+    occ -= np.max(occ)
+    n_out = int((f1-f0)/bin_hz)
+    occupancy = np.zeros(n_out)
+    for i in range(n_out):
+        occupancy[i] = occ[int((f0+bin_hz*i)/spec_df)]
+    occupancy = np.clip((occupancy +40 ) / 40, 0,1)
+    fs0, fs1 = 1000,2000
+    if(config.myBand == '60m'):
+        fs0, fs1 = 400,990
+    bin0 = int((fs0-f0)/bin_hz)
+    bin1 = int((fs1-f0)/bin_hz)
+    clear_freq = fs0 + bin_hz*np.argmin(occupancy[bin0:bin1])
+
+    config.update_txfreq(clear_freq)
+    timers.timedLog(f"[on_occupancy] occupancy data received, band is {config.myBand}, set Tx to {config.txfreq}")
+    send_to_ui_ws("freq_occ_array", {'histogram':occupancy.tolist()})
+
+
+
+        
 rig = IcomCIV()
 antenna_control = AntennaControl(onMagloopStatus, onMagloopStep)
-rxFT8 = ReceiveFT8(onDecode)
+cycle_manager = Cycle_manager(FT8, on_decode = on_decode, on_finished = on_finished_cycle, 
+                    input_device_keywords = config.input_device_keywords, freq_range = [100,3500])
+wsjtx_all_tailer = Wsjtx_all_tailer(on_decode = on_decode, running = True)
 QSO = FT8_QSO(rig)
 
 run()

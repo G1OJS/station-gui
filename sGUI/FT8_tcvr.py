@@ -8,9 +8,7 @@ import sys
 sys.path.append(r"C:\Users\drala\Documents\Projects\GitHub\PyFT8")
 import PyFT8.FT8_encoder as FT8_encoder
 import PyFT8.audio as audio
-from PyFT8.cycle_manager import Cycle_manager
-from PyFT8.sigspecs import FT8
-from sGUI.wsjtx_all_tailer import Wsjtx_all_tailer
+
 import sGUI.logging as logging
 
 import configparser
@@ -221,29 +219,3 @@ class FT8_QSO:
             self.tx_cycle = ['odd','even'][i]
             self.transmit(f"CQ {config.myCall} {config.mySquare}")
 
-def on_occupancy(spectrum_occupancy, spectrum_df, f0=0, f1=3500, bin_hz=10):
-    occupancy_fine = spectrum_occupancy/np.max(spectrum_occupancy)
-    n_out = int((f1-f0)/bin_hz)
-    occupancy = np.zeros(n_out)
-    for i in range(n_out):
-        occupancy[i] = occupancy_fine[int((f0+bin_hz*i)/spectrum_df)]
-    fs0, fs1 = 1000,2000
-    if(config.myBand == '60m'):
-        fs0, fs1 = 400,990
-    bin0 = int((fs0-f0)/bin_hz)
-    bin1 = int((fs1-f0)/bin_hz)
-    clear_freq = fs0 + bin_hz*np.argmin(occupancy[bin0:bin1])
-    occupancy = 10*np.log10(occupancy + 1e-12)
-    occupancy = 1 + np.clip(occupancy, -40, 0) / 40
-    
-    config.update_txfreq(clear_freq)
-    timers.timedLog(f"[on_occupancy] occupancy data received, band is {config.myBand}, set Tx to {config.txfreq}")
-    send_to_ui_ws("freq_occ_array", {'histogram':occupancy.tolist()})
-
-
-class ReceiveFT8:
-    def __init__(self, onDecode):
-        self.onDecode = onDecode
-        cycle_manager = Cycle_manager(FT8, on_decode = self.onDecode, on_occupancy = on_occupancy,
-                          input_device_keywords = config.input_device_keywords, freq_range = [100,3500])
-        wsjtx_all_tailer = Wsjtx_all_tailer(on_decode = self.onDecode, running = True)
