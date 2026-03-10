@@ -79,7 +79,7 @@ class Rig:
         self.setMode("RTTY")
         self.setPWR(10)
         self.ptt_on()
-        time.sleep(0.05)
+        time.sleep(0.01)
         self.vprint(f"CAT command: get SWR")
         resp = self._sendCAT(b'\x15\x12')
         self.ptt_off()
@@ -120,7 +120,7 @@ class Arduino:
             if (self.serial_port):
                 self.vprint(f"Connected to {self.port}")
         except IOError:
-            print(f"Couldn't connect to {self.port}")
+            self.vprint(f"Couldn't connect to {self.port}")
             
     def send_command(self, c):
         self.vprint(f"[ARD] send {c}")
@@ -130,24 +130,13 @@ class Arduino:
         while True:
             time.sleep(0.01)
             d = self.serial_port.readline().decode('UTF-8')
-            #if(len(d)>5):
-            #    self.vprint(f"[ARD] response {d}")
             if resp in d:
                 break
 
-bands = {
-    '160m': (1.8, 2.0),
-    '80m':  (3.5, 3.8),
-    '60m':  (5.25, 5.45),
-    '40m':  (7.0, 7.2),
-    '30m':  (10.1, 10.15),
-    '20m':  (14.0, 14.35),
-    '17m':  (18.068, 18.168),
-    '15m':  (21.0, 21.45),
-    '12m':  (24.89, 24.99),
-    '10m':  (28.0, 29.7),
-    '6m':   (50.0, 52.0),
-}
+bands = {'160m': (1.8, 2.0), '80m':  (3.5, 3.8), '60m':  (5.25, 5.45),
+         '40m':  (7.0, 7.2), '30m':  (10.1, 10.15), '20m':  (14.0, 14.35),
+         '17m':  (18.068, 18.168),'15m':  (21.0, 21.45),'12m':  (24.89, 24.99),
+         '10m':  (28.0, 29.7), '6m':   (50.0, 52.0), '2m': (144.0, 146.0)}
 
 def tune(band):
     if band == '160m': steps = [58.5, 59, 59.5, 60, 60.5, 61]
@@ -155,42 +144,46 @@ def tune(band):
     if band == '60m': steps = np.arange(600,620,5)
     if band == '40m': steps = np.arange(865,890,5)
     s = rig.getSWR()
-    if s < 100:
-        return
+    if s is not None:
+        if s < 100:
+            return
     for t in steps:
         time.sleep(1)
         ard.send_command(f"<T{t}>")
         ard.sleep_until('TUNED')
         s = rig.getSWR()
         print(t,s)
-        if s < 100:
-            break
+        if s is not None:
+            if s < 100:
+                break
 
 def band_from_freq(freq_Hz):
-    freq_mHz = freq_Hz / 1000000.0
-    for band, (lo, hi) in bands.items():
-        if lo <= freq_mHz <= hi:
-            return band
+    if freq_Hz is not None:
+        freq_mHz = freq_Hz / 1000000.0
+        for band, (lo, hi) in bands.items():
+            if lo <= freq_mHz <= hi:
+                return band
     return None
       
 def setband(band):
     global current_band
-    if band in ['160m','80m','60m','40m']:
-        ard.send_command("<RM>")
-        ard.send_command("<ML>")
-        if band != current_band:
+    if band != current_band:
+        print(f"Configure for {band}")
+        if band in ['160m','80m','60m','40m']:
+            ard.send_command("<RM>")
+            ard.send_command("<ML>")
             tune(band)
+        else:
+            ard.send_command("<RA>")
+            ard.send_command("<MD>")
         current_band = band
-    else:
-        ard.send_command("<RA>")
-        ard.send_command("<MD>")
 
 rig = Rig(verbose = False)
 ard = Arduino(verbose = False)
 ard.sleep_until('READY')
 current_band = None
 while True:
-    time.sleep(0.1)
+    time.sleep(0.5)
     f = rig.get_freq_Hz()
     band = band_from_freq(f)
     if band is not None:
