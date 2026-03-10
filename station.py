@@ -32,16 +32,19 @@ class Rig:
         
     def _sendCAT(self, cmd):
         self.connect()
-        if(not self.serial_port): return
-        self.serial_port.reset_input_buffer()
-        msg = b'\xfe\xfe\x88\xe0' + cmd + b'\xfd'
-        self.vprint(f"[CAT] send {msg.hex(' ')}")
-        self.serial_port.write(msg)
-        resp = self.serial_port.read_until(b'\xfd')
-        resp = self.serial_port.read_until(b'\xfd')
-        self.vprint(f"[CAT] response {resp.hex(' ')}")
-        self.serial_port.close()
-        return resp
+        try:
+            self.serial_port.reset_input_buffer()
+            msg = b'\xfe\xfe\x88\xe0' + cmd + b'\xfd'
+            self.vprint(f"[CAT] send {msg.hex(' ')}")
+            self.serial_port.write(msg)
+            resp = self.serial_port.read_until(b'\xfd')
+            resp = self.serial_port.read_until(b'\xfd')
+            self.vprint(f"[CAT] response {resp.hex(' ')}")
+            self.serial_port.close()
+            return resp
+        except:
+            print("couldn't send command")
+            return ''
 
     def set_freq_Hz(self, freqHz):
         s = f"{freqHz:09d}"
@@ -74,6 +77,7 @@ class Rig:
     def getSWR(self):
         resp = False
         self.setMode("RTTY")
+        self.setPWR(10)
         self.ptt_on()
         time.sleep(0.05)
         self.vprint(f"CAT command: get SWR")
@@ -83,6 +87,10 @@ class Rig:
         resp_decoded = self._decode_twoBytes(resp[-3:-1])
         if(resp_decoded):
             return int(resp_decoded)
+
+    def setPWR(self, pwr):
+        self.vprint(f"CAT command: set PWR")
+        resp = self._sendCAT(b'\x14\x0A\x00\x28')
 
     def getPWR(self):
         resp = False
@@ -142,11 +150,13 @@ bands = {
 }
 
 def tune(band):
-    if band == '160m': steps = [58.5, 59, 59.5, 60, 60.5, 61][::-1]
-    if band == '80m': steps = [300, 305, 310, 315]
-    if band == '60m': steps = [595, 600, 605, 610]
-    if band == '40m': steps = [865, 870, 875, 880]
-    minswr = (900, 0)
+    if band == '160m': steps = [58.5, 59, 59.5, 60, 60.5, 61]
+    if band == '80m': steps = np.arange(300,320,5)
+    if band == '60m': steps = np.arange(600,620,5)
+    if band == '40m': steps = np.arange(865,890,5)
+    s = rig.getSWR()
+    if s < 100:
+        return
     for t in steps:
         time.sleep(1)
         ard.send_command(f"<T{t}>")
@@ -164,18 +174,21 @@ def band_from_freq(freq_Hz):
     return None
       
 def setband(band):
+    global current_band
     if band in ['160m','80m','60m','40m']:
         ard.send_command("<RM>")
         ard.send_command("<ML>")
-        tune(band)
+        if band != current_band:
+            tune(band)
+        current_band = band
     else:
         ard.send_command("<RA>")
-        ard.send_command("<MD>")        
+        ard.send_command("<MD>")
 
 rig = Rig(verbose = False)
 ard = Arduino(verbose = False)
 ard.sleep_until('READY')
-
+current_band = None
 while True:
     time.sleep(0.1)
     f = rig.get_freq_Hz()
