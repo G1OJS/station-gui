@@ -50,6 +50,13 @@ class Rig:
         fBytes = b"".join(bytes([b]) for b in [16*int(s[7])+int(s[8]),16*int(s[5])+int(s[6]),16*int(s[3])+int(s[4]),16*int(s[1])+int(s[2]), int(s[0])])
         self._sendCAT(b"".join([b'\x00', fBytes]))
 
+    def get_freq_Hz(self):
+        self.vprint(f"CAT command: get frequency")
+        resp = self._sendCAT(b'\x03')
+        self.vprint(f"CAT: Icom responded with {resp}")
+        if(len(resp)>10):
+            return int("".join(f"{(b >> 4) & 0x0F}{b & 0x0F}" for b in reversed(resp[5:10])))
+
     def ptt_on(self, PTT_on = b'\x1c\x00\x01'):
         self.vprint(f"[CAT] PTT On")
         self._sendCAT(PTT_on)
@@ -119,20 +126,26 @@ class Arduino:
             #    self.vprint(f"[ARD] response {d}")
             if resp in d:
                 break
-      
-def tune(band):
-    
-    rig = Rig(verbose = False)
-    ard = Arduino(verbose = False)
-    ard.sleep_until('READY')
 
-    ard.send_command("<RM>")
-    ard.send_command("<ML>")
+bands = {
+    '160m': (1.8, 2.0),
+    '80m':  (3.5, 3.8),
+    '60m':  (5.25, 5.45),
+    '40m':  (7.0, 7.2),
+    '30m':  (10.1, 10.15),
+    '20m':  (14.0, 14.35),
+    '17m':  (18.068, 18.168),
+    '15m':  (21.0, 21.45),
+    '12m':  (24.89, 24.99),
+    '10m':  (28.0, 29.7),
+    '6m':   (50.0, 52.0),
+}
+
+def tune(band):
     if band == '160m': steps = [58.5, 59, 59.5, 60, 60.5, 61][::-1]
     if band == '80m': steps = [300, 305, 310, 315]
     if band == '60m': steps = [595, 600, 605, 610]
     if band == '40m': steps = [865, 870, 875, 880]
-
     minswr = (900, 0)
     for t in steps:
         time.sleep(1)
@@ -142,6 +155,31 @@ def tune(band):
         print(t,s)
         if s < 100:
             break
-        
 
-tune('80m')
+def band_from_freq(freq_Hz):
+    freq_mHz = freq_Hz / 1000000.0
+    for band, (lo, hi) in bands.items():
+        if lo <= freq_mHz <= hi:
+            return band
+    return None
+      
+def setband(band):
+    if band in ['160m','80m','60m','40m']:
+        ard.send_command("<RM>")
+        ard.send_command("<ML>")
+        tune(band)
+    else:
+        ard.send_command("<RA>")
+        ard.send_command("<MD>")        
+
+rig = Rig(verbose = False)
+ard = Arduino(verbose = False)
+ard.sleep_until('READY')
+
+while True:
+    time.sleep(0.1)
+    f = rig.get_freq_Hz()
+    band = band_from_freq(f)
+    if band is not None:
+        setband(band)
+
