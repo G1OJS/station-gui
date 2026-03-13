@@ -10,13 +10,12 @@ String cmd = "";
 
 void setup() {
   Serial.begin(9600);
-
-  Serial.println("READY");
   pinMode(MotorA, OUTPUT);
   pinMode(MotorB, OUTPUT);
   pinMode(RxAnt, OUTPUT);
   pinMode(MainAnt, OUTPUT);
   getAndPrintCurrStep();
+  printReady();
 }
 
 void motor_stop(){
@@ -60,7 +59,7 @@ bool readSerialCommand() {
 
 void tuneToStep() {
   moveToTarget(CurrStep < TargetStep);
-  printTUNED();
+  printReady();
 }
 
 void remove_backlash() {
@@ -77,7 +76,7 @@ void remove_backlash() {
     Serial.println("TUNING UP (fine)");
     moveToTarget(true);
   }
-  printTUNED();
+  printReady();
 }
 
 void moveToTarget(bool directionUp) {
@@ -116,8 +115,8 @@ void getAndPrintCurrStep() {
   Serial.println(CurrStep);
 }
 
-void printTUNED() {
+void printReady() {
   Serial.println();
-  Serial.print("TUNED ");
+  Serial.print("READY ");
   Serial.println(CurrStep);
 }

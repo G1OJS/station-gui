@@ -1,6 +1,13 @@
 import numpy as np
 import threading
 import time
+import pickle
+import matplotlib.pyplot as plt
+import time, queue
+from matplotlib import rcParams
+from matplotlib.widgets import Slider, Button
+from matplotlib.animation import FuncAnimation
+
 
 class Rig:
 
@@ -11,18 +18,10 @@ class Rig:
         self.port = port
         self.baudrate = baudrate
         self.verbose = verbose
-
+ 
     def vprint(self, text):
         if self.verbose:
             print(text)
-
-    def connect(self):
-        try:
-            self.serial_port = self.serial.Serial(port = self.port, baudrate = self.baudrate, timeout = 0.1)
-            if (self.serial_port):
-                self.vprint(f"Connected to {self.port}")
-        except IOError:
-            print(f"Couldn't connect to {self.port}")
 
     def _decode_twoBytes(self, twoBytes):
         if(len(twoBytes)==2):
@@ -31,8 +30,8 @@ class Rig:
             return  n1*100 + (n2//16)*10 + n2 %16
         
     def _sendCAT(self, cmd):
-        self.connect()
         try:
+            self.serial_port = self.serial.Serial(port = self.port, baudrate = self.baudrate, timeout = 0.1)
             self.serial_port.reset_input_buffer()
             msg = b'\xfe\xfe\x88\xe0' + cmd + b'\xfd'
             self.vprint(f"[CAT] send {msg.hex(' ')}")
@@ -43,8 +42,9 @@ class Rig:
             self.serial_port.close()
             return resp
         except:
-            print("couldn't send command")
-            return ''
+            print(f"couldn't send command {msg.hex(' ')}")
+            time.sleep(0.1)
+        return ''
 
     def set_freq_Hz(self, freqHz):
         s = f"{freqHz:09d}"
@@ -108,11 +108,21 @@ class Arduino:
         self.port = port
         self.baudrate = baudrate
         self.verbose = verbose
+        self.loop_step = 500
+        self.ready = False
+        self.bands = {'160m': (1.8, 2.0), '80m':  (3.5, 3.8), '60m':  (5.25, 5.45),
+                 '40m':  (7.0, 7.2), '30m':  (10.1, 10.15), '20m':  (14.0, 14.35),
+                 '17m':  (18.068, 18.168),'15m':  (21.0, 21.45),'12m':  (24.89, 24.99),
+                 '10m':  (28.0, 29.7), '6m':   (50.0, 52.0), '2m': (144.0, 146.0)}
+        self.default_search = {'bands':['160m', '80m', '60m', '40m'],
+                        'steps': [ [58.5, 59, 59.5, 60, 60.5, 61], np.arange(300,320,5), np.arange(597,608,1), np.arange(865,890,5)]}
+        self.load_tunings()
         self.connect()
 
-    def vprint(self, text):
-        if self.verbose:
-            print(text)
+    def band_from_freq(self, fMHz):
+        for band, (lo, hi) in self.bands.items():
+            if lo <= fMHz <= hi:
+                return band
 
     def connect(self):
         try:
@@ -121,71 +131,146 @@ class Arduino:
                 self.vprint(f"Connected to {self.port}")
         except IOError:
             self.vprint(f"Couldn't connect to {self.port}")
+
+    def monitor(self):
+        while True:
+            time.sleep(0.05)
+            d = self.serial_port.readline().decode('UTF-8')
+            if 'CurrStep' in d:
+                self.loop_step = int(d[9:])
+            if 'READY' in d:
+                self.ready = True
             
     def send_command(self, c):
+        self.ready = False
         self.vprint(f"[ARD] send {c}")
         self.serial_port.write(c.encode('UTF-8'))
 
-    def sleep_until(self, resp):
-        while True:
-            time.sleep(0.01)
-            d = self.serial_port.readline().decode('UTF-8')
-            if resp in d:
-                break
+    def load_tunings(self):
+        try:
+            with open('loop.pkl', 'rb') as f:
+                self.good_tunings = pickle.load(f)
+        except:
+            with open('loop.pkl', 'wb') as f:
+                self.good_tunings = {'freqs':[], 'steps':[]}
+                pickle.dump(self.good_tunings, f)
 
-bands = {'160m': (1.8, 2.0), '80m':  (3.5, 3.8), '60m':  (5.25, 5.45),
-         '40m':  (7.0, 7.2), '30m':  (10.1, 10.15), '20m':  (14.0, 14.35),
-         '17m':  (18.068, 18.168),'15m':  (21.0, 21.45),'12m':  (24.89, 24.99),
-         '10m':  (28.0, 29.7), '6m':   (50.0, 52.0), '2m': (144.0, 146.0)}
+    def get_tuning(self, fkHz):
+        if fkHz in self.good_tunings['freqs']:
+           return self.good_tunings['freqs'].index(fkHz)['steps']
+        else:
+            band = self.band_from_freq(fkHz/1000)
+            if band in self.default_search['bands']:
+                idx = self.default_search['bands'].index(band)
+                return self.default_search['steps'][idx]
 
-def tune(band):
-    if band == '160m': steps = [58.5, 59, 59.5, 60, 60.5, 61]
-    if band == '80m': steps = np.arange(300,320,5)
-    if band == '60m': steps = np.arange(600,620,5)
-    if band == '40m': steps = np.arange(865,890,5)
-    s = rig.getSWR()
-    if s is not None:
-        if s < 100:
-            return
-    for t in steps:
-        time.sleep(1)
-        ard.send_command(f"<T{t}>")
-        ard.sleep_until('TUNED')
-        s = rig.getSWR()
-        print(t,s)
-        if s is not None:
-            if s < 100:
-                break
+    def move_to(self, step):
+        self.send_command(f"<T{step}>")
 
-def band_from_freq(freq_Hz):
-    if freq_Hz is not None:
-        freq_mHz = freq_Hz / 1000000.0
-        for band, (lo, hi) in bands.items():
-            if lo <= freq_mHz <= hi:
-                return band
-    return None
+    def vprint(self, text):
+        if self.verbose:
+            print(text)
       
-def setband(band):
-    global current_band
-    if band != current_band:
+class Gui:
+    def __init__(self, on_control_click):
+        self.on_control_click = on_control_click
+        self.pmarg = 0.04
+        self.pos_slider_target = None
+        self.swr_slider_target = None
+        self.make_layout()
+        self.anim = FuncAnimation(self.fig, self._animate, interval=100)
+
+    def make_layout(self, wf_left = 0.15, wf_top = 0.87):
+        rcParams['toolbar'] = 'None'
+        self.plt = plt
+        self.fig = plt.figure(figsize = (4,4), facecolor=(.18, .71, .71, 0.4)) 
+        self.fig.canvas.manager.set_window_title('Antcontrol by G1OJS')
+
+        styles = {'ctrl':{'fc':'grey','c':'black'}, 'band':{'fc':'green','c':'white'}}
+        button_defs = [ {'label':'Tune loop', 'style':'ctrl', 'data':''},
+                        {'label':'Check swr', 'style':'ctrl', 'data':''},
+                        {'label':'Main = Loop', 'style':'ctrl', 'data':''},
+                        {'label':'Main = Dipoles', 'style':'ctrl', 'data':''},
+                        {'label':'Rx on main', 'style':'ctrl', 'data':''},
+                        {'label':'Rx on alt', 'style':'ctrl', 'data':''}]
+        self._make_buttons(button_defs, styles, wf_top, 0.05, 0.2, 0.01)
+
+        ax_swr_slider = self.fig.add_axes([0.05,0.2, 0.9, 0.22])
+        self.swr_slider = Slider(ax_swr_slider, "SWR", 0, 255, orientation='horizontal')
+        ax_pos_slider = self.fig.add_axes([0.05,0.1, 0.9, 0.12])
+        self.pos_slider = Slider(ax_pos_slider, "Tuning step", 30, 900, orientation='horizontal')
+
+    def _make_buttons(self, buttons, styles, btns_top, btn_h, btn_w, sep_h):
+        self.buttons = []
+        for i, btn in enumerate(buttons):
+            btn_axs = plt.axes([self.pmarg, btns_top - (i+1) * btn_h, btn_w, btn_h-sep_h])
+            style = styles[btn['style']]
+            btn_widg = Button(btn_axs, btn['label'], color=style['fc'], hovercolor='skyblue')
+            btn_widg.data = btn['data']
+            btn_widg.on_clicked(lambda event, btn_widg=btn_widg: self.on_control_click(btn_widg))
+            self.buttons.append(btn_widg)
+        
+    def _animate(self, frame):
+        if self.pos_slider_target is not None:
+            self.pos_slider.set_val(self.pos_slider_target)
+            self.pos_slider_target = None
+        if self.swr_slider_target is not None:
+            self.swr_slider.set_val(self.swr_slider_target)
+            self.swr_slider_target = None
+        return []
+
+    def config_for_band(self, band):
         print(f"Configure for {band}")
         if band in ['160m','80m','60m','40m']:
-            ard.send_command("<RM>")
-            ard.send_command("<ML>")
-            tune(band)
+            self.send_command("<RM>")
+            self.send_command("<ML>")
         else:
-            ard.send_command("<RA>")
-            ard.send_command("<MD>")
-        current_band = band
+            self.send_command("<RA>")
+            self.send_command("<MD>")
 
-rig = Rig(verbose = False)
-ard = Arduino(verbose = False)
-ard.sleep_until('READY')
-current_band = None
-while True:
-    time.sleep(0.5)
-    f = rig.get_freq_Hz()
-    band = band_from_freq(f)
-    if band is not None:
-        setband(band)
+class App:
+      
+    def __init__(self):
+        self.current_kHz = 0
+        self.rig = Rig(verbose = False)
+        self.ard = Arduino(verbose = True)
+        self.gui = Gui(self.on_control_click)
+        threading.Thread(target = self.ard.monitor, daemon = True).start()
+        self.gui.plt.show()
+
+    def check_swr(self):
+        s = self.rig.getSWR()
+        self.gui.swr_slider_target = s
+        return s
+
+    def tune_loop(self):
+        for step in self.ard.get_tuning(self.rig.get_freq_Hz()/1000):
+            self.ard.move_to(step)
+            while not self.ard.ready:
+                self.gui.pos_slider_target = self.ard.loop_step
+                time.sleep(0.01)
+            s = self.check_swr()
+            if s is not None:
+                if s < 100:
+                    return
+
+    def on_control_click(self, btn_widg):
+        data = btn_widg.data
+        txt = btn_widg.label.get_text()
+        if txt == 'Check swr':
+            self.check_swr()
+        if txt == 'Main = Loop':
+            self.ard.send_command("<ML>")
+        if txt == 'Main = Dipoles':
+            self.ard.send_command("<MD>")
+        if txt == 'Rx on main':
+            self.ard.send_command("<RM>")
+        if txt == 'Rx on alt':
+            self.ard.send_command("<RA>")
+        if txt == 'Tune loop':
+            if txt == 'Tune loop':
+                threading.Thread(target=self.tune_loop, daemon=True).start()
+           
+
+app = App()
 
