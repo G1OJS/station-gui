@@ -115,7 +115,7 @@ class Arduino:
                  '17m':  (18.068, 18.168),'15m':  (21.0, 21.45),'12m':  (24.89, 24.99),
                  '10m':  (28.0, 29.7), '6m':   (50.0, 52.0), '2m': (144.0, 146.0)}
         self.default_search = {'bands':['160m', '80m', '60m', '40m'],
-                        'steps': [ [58.5, 59, 59.5, 60, 60.5, 61], np.arange(300,320,5), np.arange(597,608,1), np.arange(865,890,5)]}
+                        'steps': [ [58.5, 59, 59.5, 60, 60.5, 61], np.arange(300,320,5), np.arange(597,608,1), np.arange(870,895,2)]}
         self.load_tunings()
         self.connect()
 
@@ -150,14 +150,25 @@ class Arduino:
         try:
             with open('loop.pkl', 'rb') as f:
                 self.good_tunings = pickle.load(f)
+            print(self.good_tunings)
         except:
-            with open('loop.pkl', 'wb') as f:
-                self.good_tunings = {'freqs':[], 'steps':[]}
-                pickle.dump(self.good_tunings, f)
+            self.good_tunings = {}
+            self.save_tunings()
 
+    def update_tunings(self, fkHz, step):
+        if not fkHz in self.good_tunings:
+            self.good_tunings[fkHz] = 0
+        self.good_tunings[fkHz] = step
+        self.save_tunings()
+
+    def save_tunings(self):
+        with open('loop.pkl', 'wb') as f:
+            pickle.dump(self.good_tunings, f)
+        
     def get_tuning(self, fkHz):
-        if fkHz in self.good_tunings['freqs']:
-           return self.good_tunings['freqs'].index(fkHz)['steps']
+        if fkHz in self.good_tunings:
+            s = self.good_tunings[fkHz]
+            return [s-1, s, s+1]
         else:
             band = self.band_from_freq(fkHz/1000)
             if band in self.default_search['bands']:
@@ -244,15 +255,21 @@ class App:
         return s
 
     def tune_loop(self):
-        for step in self.ard.get_tuning(self.rig.get_freq_Hz()/1000):
-            self.ard.move_to(step)
-            while not self.ard.ready:
-                self.gui.pos_slider_target = self.ard.loop_step
-                time.sleep(0.01)
-            s = self.check_swr()
-            if s is not None:
-                if s < 100:
-                    return
+        self.ard.send_command("<ML>")
+        fkHz = self.rig.get_freq_Hz()/1000
+        steps = self.ard.get_tuning(fkHz)
+        print(steps)
+        if steps is not None:
+            for step in steps:
+                self.ard.move_to(step)
+                while not self.ard.ready:
+                    self.gui.pos_slider_target = self.ard.loop_step
+                    time.sleep(0.01)
+                s = self.check_swr()
+                if s is not None:
+                    if s < 100:
+                        self.ard.update_tunings(fkHz, step)
+                        return
 
     def on_control_click(self, btn_widg):
         data = btn_widg.data
