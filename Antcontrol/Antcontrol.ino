@@ -32,11 +32,6 @@ void loop() {
       Serial.print("Tune to: "); Serial.println(TargetStep);
       tuneToStep();
     }
-    if (cmd_ == 'B') { 
-      Serial.print("Remove backlash to: "); Serial.println(TargetStep);
-      remove_backlash();
-    }
-    
     if (cmd_ == 'M') {digitalWrite(MainAnt, (cmd.charAt(1) == 'L') );}
     if (cmd_ == 'R') {digitalWrite(RxAnt, (cmd.charAt(1) == 'M') );}
     if (cmd_ == 'Q') {getAndPrintCurrStep();}
@@ -58,45 +53,42 @@ bool readSerialCommand() {
 }
 
 void tuneToStep() {
-  moveToTarget(CurrStep < TargetStep);
-  printReady();
-}
-
-void remove_backlash() {
   if (CurrStep < TargetStep) {
-    Serial.println("TUNING UP");
     moveToTarget(true);
   } else {
     const int reverse = 5;
     TargetStep -= reverse;
-    Serial.println("TUNING DOWN");
     moveToTarget(false);
     delay(250);
     TargetStep += reverse;
-    Serial.println("TUNING UP (fine)");
     moveToTarget(true);
   }
   printReady();
 }
 
 void moveToTarget(bool directionUp) {
-  int PWM = 150;
+  int PWM = 120;
+  int power = 0;
   int lastStep = CurrStep;
   unsigned long t0 = millis();
-  motor_stop();
   while (true) {
     getAndPrintCurrStep();
-    // Adjust speed
-    if (abs(CurrStep - lastStep) < 1) {
-      if (PWM < 250) PWM++;
+    bool fast = (CurrStep > TargetStep) || (CurrStep < TargetStep - 20);
+    if (fast) {
+      power = 255;
     } else {
-      if (PWM > 150) PWM--;
+      if (abs(CurrStep - lastStep) < 1) {
+        if (PWM < 250) PWM++;
+      } else {
+        if (PWM > 120) PWM--;
+      }
+      power = PWM;
     }
     lastStep = CurrStep;
     // Drive motor
     if (CurrStep != TargetStep) {
-      int power = (abs(CurrStep - TargetStep) > 20 || !directionUp) ? 255 : PWM;
       analogWrite(directionUp ? MotorA : MotorB, power);
+      analogWrite(directionUp ? MotorB : MotorA, 0);
     }
     // Break conditions
     if ((CurrStep >= TargetStep && directionUp) ||
@@ -110,7 +102,6 @@ void moveToTarget(bool directionUp) {
 
 void getAndPrintCurrStep() {
   CurrStep = analogRead(A0);
-  Serial.println();
   Serial.print("CurrStep ");
   Serial.println(CurrStep);
 }
@@ -118,5 +109,4 @@ void getAndPrintCurrStep() {
 void printReady() {
   Serial.println();
   Serial.print("READY ");
-  Serial.println(CurrStep);
 }

@@ -115,7 +115,7 @@ class Arduino:
                  '17m':  (18.068, 18.168),'15m':  (21.0, 21.45),'12m':  (24.89, 24.99),
                  '10m':  (28.0, 29.7), '6m':   (50.0, 52.0), '2m': (144.0, 146.0)}
         self.default_search = {'bands':['160m', '80m', '60m', '40m'],
-                        'steps': [ [58.5, 59, 59.5, 60, 60.5, 61], np.arange(310,330,2), np.arange(597,608,1), np.arange(870,895,2)]}
+                        'steps': [ [58.5, 59, 59.5, 60, 60.5, 61], np.arange(300,320,5), np.arange(597,608,1), np.arange(870,895,2)]}
         self.load_tunings()
         self.connect()
 
@@ -134,12 +134,14 @@ class Arduino:
 
     def monitor(self):
         while True:
-            time.sleep(0.02)
+            time.sleep(0.05)
             d = self.serial_port.readline().decode('UTF-8')
+            print(d)
             if 'CurrStep' in d:
                 self.loop_step = int(d[9:])
             if 'READY' in d:
                 self.ready = True
+                break
             
     def send_command(self, c):
         self.ready = False
@@ -168,7 +170,7 @@ class Arduino:
     def get_tuning(self, fkHz):
         if fkHz in self.good_tunings:
             s = self.good_tunings[fkHz]
-            return [s * a for a in np.linspace(0.98, 1.02, 10)]
+            return [s-1, s, s+1]
         else:
             band = self.band_from_freq(fkHz/1000)
             if band in self.default_search['bands']:
@@ -230,6 +232,15 @@ class Gui:
             self.swr_slider_target = None
         return []
 
+    def config_for_band(self, band):
+        print(f"Configure for {band}")
+        if band in ['160m','80m','60m','40m']:
+            self.send_command("<RM>")
+            self.send_command("<ML>")
+        else:
+            self.send_command("<RA>")
+            self.send_command("<MD>")
+
 class App:
       
     def __init__(self):
@@ -238,46 +249,29 @@ class App:
         self.ard = Arduino(verbose = True)
         self.gui = Gui(self.on_control_click)
         threading.Thread(target = self.ard.monitor, daemon = True).start()
-        self.check_loopstep()
         self.gui.plt.show()
-
-    def check_loopstep(self):
-        self.ard.send_command("<Q>")
-        while not self.ard.ready:
-            self.gui.pos_slider_target = self.ard.loop_step
-            time.sleep(0.01)
 
     def check_swr(self):
         s = self.rig.getSWR()
         self.gui.swr_slider_target = s
-       # self.check_loopstep()
         return s
-
-    def move_loop_to(self, step):
-        self.ard.move_to(step)
-        while not self.ard.ready:
-            self.gui.pos_slider_target = self.ard.loop_step
-            time.sleep(0.01)        
 
     def tune_loop(self):
         self.ard.send_command("<ML>")
         fkHz = self.rig.get_freq_Hz()/1000
         steps = self.ard.get_tuning(fkHz)
-        s = 5
         if steps is not None:
-            self.move_loop_to(steps[0])
             for step in steps:
-                if step > self.ard.loop_step:
-                    self.move_loop_to(step)
-                    s = self.check_swr()
-                    if s is not None:
-                        print(f"Step {self.ard.loop_step:6.1f} swr = {s:3.1f}")
-                        if s < 1.5:
-                            self.ard.update_tunings(fkHz, step)
-                            print("Tuned")
-                            return
-            print("Done - not tuned")
-
+                self.ard.move_to(step)
+                while not self.ard.ready:
+                    self.gui.pos_slider_target = self.ard.loop_step
+                    time.sleep(0.001)
+                self.gui.pos_slider_target = self.ard.loop_step
+                s = self.check_swr()
+                if s is not None:
+                    if s < 100:
+                        self.ard.update_tunings(fkHz, step)
+                        return
 
     def on_control_click(self, btn_widg):
         data = btn_widg.data
