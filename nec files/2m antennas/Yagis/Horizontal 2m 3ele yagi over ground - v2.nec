@@ -1,0 +1,26 @@
+CM
+CM
+CM
+CE
+SY BASE=7.3
+SY Xc=0
+SY Yc=0
+SY Phi=0
+SY RefY=-0.54154
+SY DirY=0.349677
+SY Lref=1.00759
+SY WD=0.005
+SY WDD = WD * 12/16
+SY LDriv=0.991
+SY lDir=0.964235
+
+GW	1	9	-LDriv/2	0.	0	LDriv/2	0.0	0	WDD/2
+GW	2	9	-Lref/2	RefY	0	Lref/2	RefY	0	WD/2
+GW	3	9	-LDir/2	DirY	0	LDir/2	DirY	0	WD/2
+GM	0	0	0	0	Phi	Xc	Yc	BASE
+
+GE -1
+GN 2 0 0 0 11 0.01
+EX	0	1	5	0	1.
+FR	0	5	0	0	144.2	1.0
+EN

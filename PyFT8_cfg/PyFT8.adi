@@ -28,3 +28,5 @@ header <eoh>
 <call:4>E70A <gridsquare:4>JN94 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-12 <qso_date:8>20260311 <qso_date_off:8>20260311 <time_on:6>220929 <time_off:6>220929 <band:3>40m <freq:5>7.074 <eor>
 
 <call:6>HB9HSJ <gridsquare:4>JN47 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-13 <qso_date:8>20260313 <qso_date_off:8>20260313 <time_on:6>220728 <time_off:6>220728 <band:3>40m <freq:5>7.074 <eor>
+
+<call:5>OZ9FF <gridsquare:4>JO75 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-07 <qso_date:8>20260317 <qso_date_off:8>20260317 <time_on:6>120501 <time_off:6>120501 <band:3>20m <freq:6>14.074 <eor>

@@ -1,0 +1,29 @@
+CM
+CM
+CM
+CM forw: 86, 89 ; back: 86, 269
+CE
+SY BASE=7.3
+SY Xc=0
+SY Yc=0
+SY Phi=0
+SY RefY=-0.54
+SY DirY=0.34
+SY Lref=1.026
+SY WD=0.005
+SY WDD = WD * 12/16
+SY LDriv=0.991
+SY lDir=0.916
+
+GW	1	9	-LDriv/2	0.	0	LDriv/2	0.0	0	WDD/2
+GW	2	9	-Lref/2	RefY	0	Lref/2	RefY	0	WD/2
+GW	3	9	-LDir/2	DirY	0	LDir/2	DirY	0	WD/2
+GM	0	0	0	0	Phi	Xc	Yc	BASE
+
+GE -1
+GN 2 0 0 0 11 0.01
+EX	0	1	5	0	1.
+FR,0,1,0,0,144.2
+PQ -1
+PT -1
+RP,0,60,120,1003,-88,2,3,3
