@@ -2,59 +2,37 @@ header <eoh>
 <call:5>N8HRZ <gridsquare:4>EN91 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>+03 <qso_date:8>20260305 <qso_date_off:8>20260305 <time_on:6>132600 <time_off:6>132600 <band:3>20m <freq:6>14.074 <eor>
 <call:5>SQ9SQ <gridsquare:4>KN09 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>+02 <qso_date:8>20260305 <qso_date_off:8>20260305 <time_on:6>131344 <time_off:6>131344 <band:3>20m <freq:6>14.074 <eor>
 <call:5>OZ7DR <gridsquare:4>JO55 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>+05 <qso_date:8>20260306 <qso_date_off:8>20260306 <time_on:6>172544 <time_off:6>172544 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>EA2DR <gridsquare:4>IN83 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-05 <qso_date:8>20260307 <qso_date_off:8>20260307 <time_on:6>001159 <time_off:6>001159 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>F1PBZ <gridsquare:4>JN26 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>+03 <qso_date:8>20260307 <qso_date_off:8>20260307 <time_on:6>231246 <time_off:6>231246 <band:4>160m <freq:5>1.840 <eor>
-
 <call:6>DL1OBF <gridsquare:4>JO42 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-12 <qso_date:8>20260308 <qso_date_off:8>20260308 <time_on:6>235658 <time_off:6>235658 <band:3>20m <freq:6>14.074 <eor>
 <call:5>PI4DX <gridsquare:4>JO21 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:2>None <rst_rcvd:3>-6 <qso_date:8>20260309 <qso_date_off:8>20260309 <time_on:6>220258 <time_off:6>220358 <band:4>160m <freq:5>1.840 <eor>
-
-
 <call:4>G6PZ <gridsquare:4>IO81 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-07 <qso_date:8>20260309 <qso_date_off:8>20260309 <time_on:6>222345 <time_off:6>222345 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>C31CT <gridsquare:4>IO81 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-14 <qso_date:8>20260309 <qso_date_off:8>20260309 <time_on:6>222345 <time_off:6>222345 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>ON5YT <gridsquare:4>JO21 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-07 <rst_rcvd:3>-06 <qso_date:8>20260310 <qso_date_off:8>20260310 <time_on:6>175514 <time_off:6>175514 <band:3>80m <freq:5>3.573 <eor>
-
 <call:4>9A5E <gridsquare:4>JN75 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-07 <qso_date:8>20260310 <qso_date_off:8>20260310 <time_on:6>224029 <time_off:6>224029 <band:3>80m <freq:5>3.573 <eor>
-
 <call:5>DD7MR <gridsquare:4>JN68 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-05 <qso_date:8>20260311 <qso_date_off:8>20260311 <time_on:6>114531 <time_off:6>114531 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>DD7MR <gridsquare:4>None <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:4>None <qso_date:8>20260311 <qso_date_off:8>20260311 <time_on:6>114631 <time_off:6>114631 <band:3>20m <freq:6>14.074 <eor>
-
 <call:6>IK4RVY <gridsquare:4>JN64 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-10 <qso_date:8>20260311 <qso_date_off:8>20260311 <time_on:6>120329 <time_off:6>120329 <band:3>20m <freq:6>14.074 <eor>
-
 <call:4>E70A <gridsquare:4>JN94 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-12 <qso_date:8>20260311 <qso_date_off:8>20260311 <time_on:6>220929 <time_off:6>220929 <band:3>40m <freq:5>7.074 <eor>
-
 <call:6>HB9HSJ <gridsquare:4>JN47 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-13 <qso_date:8>20260313 <qso_date_off:8>20260313 <time_on:6>220728 <time_off:6>220728 <band:3>40m <freq:5>7.074 <eor>
-
 <call:5>OZ9FF <gridsquare:4>JO75 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-07 <qso_date:8>20260317 <qso_date_off:8>20260317 <time_on:6>120501 <time_off:6>120501 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>EA9QD <gridsquare:4>IM75 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-07 <qso_date:8>20260318 <qso_date_off:8>20260318 <time_on:6>234947 <time_off:6>234947 <band:3>40m <freq:5>7.074 <eor>
-
 <call:5>G4HGI <gridsquare:4>IO83 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-10 <rst_rcvd:3>-09 <qso_date:8>20260319 <qso_date_off:8>20260319 <time_on:6>183429 <time_off:6>183429 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>G4HGI <gridsquare:4>IO83 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-10 <rst_rcvd:3>-09 <qso_date:8>20260319 <qso_date_off:8>20260319 <time_on:6>183429 <time_off:6>183429 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>G4HGI <gridsquare:4>IO83 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-10 <rst_rcvd:3>-09 <qso_date:8>20260319 <qso_date_off:8>20260319 <time_on:6>183429 <time_off:6>183429 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>M0WWJ <gridsquare:4>IO90 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-16 <qso_date:8>20260320 <qso_date_off:8>20260320 <time_on:6>084314 <time_off:6>084314 <band:2>2m <freq:7>144.174 <eor>
-
 <call:6>HB9ACA <gridsquare:4>JN36 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>+09 <qso_date:8>20260320 <qso_date_off:8>20260320 <time_on:6>104945 <time_off:6>104945 <band:3>20m <freq:6>14.074 <eor>
-
 <call:6>SQ5KVS <gridsquare:4>KO02 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-02 <qso_date:8>20260321 <qso_date_off:8>20260321 <time_on:6>134158 <time_off:6>134158 <band:3>20m <freq:6>14.074 <eor>
-
 <call:5>M0WWJ <gridsquare:4>IO90 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>+08 <rst_rcvd:3>-02 <qso_date:8>20260321 <qso_date_off:8>20260321 <time_on:6>173413 <time_off:6>173413 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>G4DCV <gridsquare:4>IO91 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:4>None <rst_rcvd:3>-15 <qso_date:8>20260322 <qso_date_off:8>20260322 <time_on:6>075859 <time_off:6>075859 <band:2>2m <freq:7>144.174 <eor>
-
 <call:6>GW7SMV <gridsquare:4>IO81 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-04 <rst_rcvd:3>-08 <qso_date:8>20260322 <qso_date_off:8>20260322 <time_on:6>091728 <time_off:6>091728 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>G4PMZ <gridsquare:4>IO91 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-16 <rst_rcvd:3>-15 <qso_date:8>20260322 <qso_date_off:8>20260322 <time_on:6>132614 <time_off:6>132614 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>M0JDK <gridsquare:4>IO92 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-18 <rst_rcvd:3>-10 <qso_date:8>20260322 <qso_date_off:8>20260322 <time_on:6>133229 <time_off:6>133229 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>G4RFR <gridsquare:4>IO90 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-03 <rst_rcvd:3>+13 <qso_date:8>20260322 <qso_date_off:8>20260322 <time_on:6>195244 <time_off:6>195244 <band:2>2m <freq:7>144.174 <eor>
-
 <call:5>C31CT <gridsquare:4>JN02 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-06 <rst_rcvd:3>-16 <qso_date:8>20260322 <qso_date_off:8>20260322 <time_on:6>213131 <time_off:6>213131 <band:4>160m <freq:5>1.840 <eor>
+<call:5>G0BLB <gridsquare:4>IO81 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-04 <rst_rcvd:3>+04 <qso_date:8>20260323 <qso_date_off:8>20260323 <time_on:6>155558 <time_off:6>155558 <band:2>2m <freq:7>144.174 <eor>
+<call:5>G6CUT <gridsquare:4>IO90 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_sent:3>-08 <rst_rcvd:3>+24 <qso_date:8>20260323 <qso_date_off:8>20260323 <time_on:6>193745 <time_off:6>193745 <band:2>2m <freq:7>144.174 <eor>
+<call:5>F5LMG <gridsquare:4>IN88 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_rcvd:3>-17 <qso_date:8>20260324 <qso_date_off:8>20260324 <time_on:6>191700 <time_off:6>191830 <band:2>2m <freq:7>144.174 <eor>
+<call:5>M7DLB <gridsquare:4>I090 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:4>IO90 <rst_rcvd:3>-17 <qso_date:8>20260325 <qso_date_off:8>20260325 <time_on:6>083100 <time_off:6>083400 <band:2>2m <freq:7>144.174 <eor>
+<call:6>YO5OHT <gridsquare:4>KN16 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:6>IO90JU <rst_sent:3>-02 <rst_rcvd:3>-10 <qso_date:8>20260325 <qso_date_off:8>20260325 <time_on:6>085730 <time_off:6>085730 <band:3>20m <freq:6>14.074 <eor>
+<call:6>EA5JNQ <gridsquare:4>IM98 <mode:3>FT8 <operator:5>G1OJS <station_callsign:5>G1OJS <my_gridsquare:6>IO90JU <rst_sent:3>+06 <rst_rcvd:3>-15 <qso_date:8>20260325 <qso_date_off:8>20260325 <time_on:6>090444 <time_off:6>090444 <band:3>20m <freq:6>14.074 <eor>
