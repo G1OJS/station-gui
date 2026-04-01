@@ -1,0 +1,40 @@
+CM
+CM
+CM
+CM forw: 86, 176 ; back: 86, 356
+CE
+SY BASE=7.5
+SY d=0.18
+SY w=0.18
+SY h=0.271093
+SY g=0.027673
+SY WD = 0.01
+
+SY hd = d/2
+SY hh = h/2
+SY hw = w/2
+SY hg = g/2
+
+GW	2	5	-hd	-hw	-hh	hd	-hw	-hh	WD/2
+GW	3	5	hd	hw	hh	hd	-hw	hh	WD/2
+GW	4	5	hd	hw	hh	-hd	hw	hh	WD/2
+GW	5	5	-hd	hg	hh	-hd	hg	-hh	WD/2
+GW	6	2	-hd	-hg	hh	-hd	-hw	hh	WD/2
+GW	7	2	-hd	hg	hh	-hd	hw	hh	WD/2
+
+GW	12	5	-hd	hw	-hh	hd	hw	-hh	WD/2
+GW	13	5	hd	hw	-hh	hd	-hw	-hh	WD/2
+GW	14	5	hd	-hw	hh	-hd	-hw	hh	WD/2
+GW	15	5	-hd	-hg	hh	-hd	-hg	-hh	WD/2
+GW	16	2	-hd	-hg	-hh	-hd	-hw	-hh	WD/2
+GW	17	2	-hd	hg	-hh	-hd	hw	-hh	WD/2
+
+GM	0	0	0	0	0	0	0	BASE
+
+GE -1
+GN 2 0 0 0 11 0.01
+LD	5	0	0	0	58000000
+EX	0	13	3	0	1.
+FR,0,1,0,0,144.2
+PQ -1
+PT -1
