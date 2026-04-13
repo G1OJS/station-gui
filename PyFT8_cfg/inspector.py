@@ -1,29 +1,31 @@
-import pickle
+import json
 import numpy as np
 import time
 
+#file = "backup/hearing_me1.json"
+#file = "hearing_me.json"
+file = "heard_by_me.json"
+#file = "heard_by_me_260412_1302.json"
 
-with open("hearing_me.pkl", "rb") as f:
-    data = pickle.load(f)
+with open(file, "r") as f:
+    data = json.load(f)
+
+print(len(data['10m']))
 
 data2 = {}
+i = 1
 for b in data:
-    band_dict = {}
     for c in data[b]:
-        info = data[b][c]
-        info.pop('c',None)
-        info.pop('new',None)
-        info.update({'t':int(info['t']), 'rp':int(info['rp'])})
-        band_dict[c] = info
-        #print(b,c,info)
-    data2[b] = band_dict
+        if b == "2m":
+            info = data[b][c]
+            t = time.strftime("%y%m%d %H%M",time.gmtime(info['t']))
+            print(i, b, c, t)
+            i+=1
         
+        #if int(info['t']) > 0:
+        #    data2.setdefault(b, {})
+        #    data2[b].setdefault(c, {})
+        #    data2[b][c] = info
 
-with open("hearing_me_2.pkl", "wb") as f:
-    pickle.dump(data2, f)
-
-
-with open("hearing_me_2.pkl", "rb") as f:
-    data = pickle.load(f)
-for c in data2['2m']:
-    print(data2['2m'][c])
+#with open(file, "wb") as f:
+#    pickle.dump(data2, f)

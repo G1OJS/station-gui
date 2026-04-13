@@ -1,0 +1,22 @@
+SY Dwire=1.126761	' Wire diameter mm
+SY Ha=7.0	' Height of apex, m
+SY R1=0.4
+CM		
+GA	1	20	R1	0	180	Dwire/2000
+GA	2	20	R1	0	180	Dwire/2000
+GM	1	1	180	0	0	2*R1
+GM	1	0	90
+
+GM	0	0	0	0	0	0	0	Ha
+'
+
+CM
+GE	-1	'end of geometry
+LD	5	0	0	0	58000000	'copper wires everywhere
+GN 2 0 0 0 11 0.01
+EK
+EX	0	2	1	0	1	0	' feed at top of V
+FR,0,1,0,0,144.2
+PQ -1
+PT -1
+RP,0,37,1,1000,-90,65,5

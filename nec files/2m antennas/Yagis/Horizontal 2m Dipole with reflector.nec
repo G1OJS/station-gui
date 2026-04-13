@@ -1,0 +1,19 @@
+CM
+CM
+CM
+CE
+SY BASE=7.3
+SY Sep=0.26133
+SY Lref=1.013031
+SY WD=0.005
+SY LD=0.965
+
+GW	1	9	-LD/2	sep	0	LD/2	sep	0	WD/2
+GW	2	9	-Lref/2	0	0	Lref/2	0	0	WD/2
+GM	0	0	0	0	0	0	0	BASE
+
+GE -1
+GN 2 0 0 0 11 0.01
+EX  0    1    5    0  1.
+FR  0    5    0    0  144.      1.0
+EN

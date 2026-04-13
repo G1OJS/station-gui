@@ -1,0 +1,30 @@
+CM
+CM
+CM
+CM forw: 180, 0 ; back: 0, 180
+CE
+SY W0 = 0.005
+
+SY L0 = 0.25
+SY L1=0.068185
+SY H0=0.054253
+
+SY hL0 = L0/2
+SY hL1 = L1/2
+
+SY lf = 0.005
+
+GW	1	5	lf	0	0	hL0	0	0	W0/2
+GW	2	1	hL0	0	0	hL0	0	-H0	W0/2
+GW	3	3	hL0	0	-H0	hL1	0	-H0	W0/2
+GX	10	100
+
+
+GW	100	9	-lf	0	0	lf	0	0	W0/2
+
+
+GE 0
+EX	0	100	5	0	1.
+FR,0,1,0,0,300
+PQ -1
+PT -1

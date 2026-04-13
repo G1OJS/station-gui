@@ -1,0 +1,31 @@
+CM
+CM
+CM
+CE
+SY W0 = 0.005
+
+SY L0 = 0.375
+SY L1=0.300343
+SY H0=0.118105
+SY H1=0.049134
+
+SY hL0 = L0/2
+SY hL1 = L1/2
+
+SY lf = 0.005
+
+GW	1	5	lf	0	0	hL0	0	0	W0/2
+GW	2	1	hL0	0	0	hL0	-H0	0	W0/2
+GW	3	3	hL0	-H0	0	hL1	-H1	0	W0/2
+GW	5	3	hL1	-H1	0	0	-H1	0	W0/2
+
+GX	10	100
+
+
+GW	100	9	-lf	0	0	lf	0	0	W0/2
+
+
+GE 0
+EX	0	100	5	0	1.
+FR	0	5	0	0	300	1.0
+EN

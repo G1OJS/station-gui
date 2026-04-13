@@ -1,0 +1,34 @@
+CM
+CM
+CM
+CM forw: 90, 90 ; back: 90, 270
+CE
+SY W0 = 0.0005
+
+SY L0 = 0.25
+SY H1=0.049106
+SY d=0.002
+SY lt=0.2
+
+SY hL0 = L0/2
+SY lf = l0/5
+
+GW	1	2	lf	h1/2	0	hL0	h1/2	0	W0/2
+GW	2	1	Hl0	h1/2	0	hL0	d/2	0	W0/2
+GW	5	5	Hl0	-d/2	0	hL0	-d/2	lt	W0/2
+GW	4	5	Hl0	d/2	0	hL0	d/2	lt	W0/2
+GW	6	2	hL0	-H1/2	0	0	-H1/2	0	W0/2
+GW	3	1	Hl0	-d/2	0	hL0	-h1/2	0	W0/2
+GW	9	1	Hl0	-d/2	lt	hL0	d/2	lt	W0/2
+
+GX	10	100
+
+
+GW	100	9	-lf	h1/2	0	lf	h1/2	0	W0/2
+
+
+GE 0
+EX	0	100	5	0	1.
+FR,0,1,0,0,300
+PQ -1
+PT -1

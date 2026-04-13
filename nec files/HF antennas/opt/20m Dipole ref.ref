@@ -1,0 +1,24 @@
+CM
+CM
+CM
+CM forw: 50, 88 ; back: 50, 268
+CE
+SY BASE=7.3
+
+SY W0 = 0.005
+
+SY L0=10
+SY y0 = -0.3
+SY w = 0.43
+SY h = 0.47
+
+GW	100	20	-L0/2	Y0	0	L0/2	Y0	0	W0/2
+
+GM	0	0	0	0	0	0	0	BASE
+
+GE -1
+GN 2 0 0 0 11 0.01
+EX	0	100	11	0	1.
+FR,0,1,0,0,14.2
+PQ -1
+PT -1
