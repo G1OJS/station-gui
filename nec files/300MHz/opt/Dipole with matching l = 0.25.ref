@@ -1,0 +1,26 @@
+CM
+CM
+CM
+CM forw: 85, 270 ; back: 95, 90
+CE
+SY W0 = 0.005
+SY L0=0.25
+SY lm=0.1
+SY wm=.01
+SY tm=0.05
+
+
+GW	1	9	wm/2	0	0	L0/2	0	0	W0/2
+GW	2	4	wm/2	0	0	wm/2	0	-lm+tm	W0/2
+GW	3	4	wm/2	0	-lm+tm	wm/2	0	-lm	W0/2
+GX	0	100
+
+GW	100	9	-wm/2	0	-lm+tm	wm/2	0	-lm+tm	W0/2
+GW	101	4	-wm/2	0	-lm	wm/2	0	-lm	W0/2
+
+
+GE -0
+EX	0	100	5	0	1.
+FR,0,1,0,0,300
+PQ -1
+PT -1
