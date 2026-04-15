@@ -1,0 +1,38 @@
+CM
+CM
+CM
+CM forw: 86, 88 ; back: 86, 268
+CE
+SY BASE=7.3
+
+SY W0 = 0.002
+
+SY hL0=0.200171
+SY hL1=0.075899
+SY H=0.074326
+
+SY lf = 0.03
+SY lhp=0.078594
+
+GW	1	5	lf	0	0	hL0	0	0	W0/2
+GW	2	1	hL0	0	0	hL0	0	-H	W0/2
+GW	3	3	hL0	0	-H	hL1	0	-H	W0/2
+GW	4	1	hL1	0	-H	hL1	0	-2*H	W0/2
+GW	5	5	hL1	0	-2*H	hL0	0	-2*H	W0/2
+GX	10	100
+
+
+GW	100	1	-lf	0	0	lf	0	0	W0/2
+GW	101	3	-lf	0	0	-lf	0	lhp	W0/2
+GW	102	3	lf	0	0	lf	0	lhp	W0/2
+GW	103	9	-lf	0	lhp	lf	0	lhp	W0/2
+
+
+GM	0	0	0	0	0	0	0	BASE
+
+GE -1
+GN 2 0 0 0 11 0.01
+EX	0	100	1	0	1.
+FR,0,1,0,0,144.2
+PQ -1
+PT -1
